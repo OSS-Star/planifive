@@ -52,6 +52,14 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
   useEffect(() => {
     fetchDispos();
     fetchCalls();
+
+    // Polling every 10 seconds to keep data fresh without overwriting user actions immediately
+    const interval = setInterval(() => {
+      fetchDispos();
+      fetchCalls();
+    }, 10000);
+
+    return () => clearInterval(interval);
   }, [currentMonday]);
 
   // Calculer les stats (Matchs Gold et Potentiels) à chaque changement de données
@@ -287,8 +295,9 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ date: dateStr, hour }),
       });
-      // We still fetch to ensure sync, but the UI is already updated
-      fetchDispos();
+      // We REMOVED fetchDispos() here to prevent rollback/flickering.
+      // The optimistic update above is enough.
+      // The background polling will eventually sync any external changes.
     } catch (error) {
       console.error("Error toggling slot:", error);
       // Revert on error (optional but recommended for robust optimistic UI)
