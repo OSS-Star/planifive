@@ -235,7 +235,10 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
         }
       }
 
-      // 3. Send PUT request
+      // 3. Send PUT request with timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
       const res = await fetch("/api/availability", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -244,7 +247,8 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
           end: formatDateLocal(end),
           slots: slotsToSave
         }),
-      });
+        signal: controller.signal
+      }).finally(() => clearTimeout(timeoutId));
 
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
@@ -522,7 +526,7 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
 
         {/* FLOATING SAVE BUTTON */}
         {unsavedChanges && (
-          <div className="fixed bottom-8 right-8 z-[2000]">
+          <div className="fixed top-24 right-8 z-[2000]">
             <button
               onClick={saveChanges}
               disabled={isSaving}
