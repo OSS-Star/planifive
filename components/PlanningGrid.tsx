@@ -225,16 +225,31 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
         }
       }
     }
+
+    // Optimistic Update
     setMySlots(newSlots);
 
-    for (const slot of slotsToUpdate) {
-      await fetch("/api/availability", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(slot),
-      });
+    // Batch API Call
+    if (slotsToUpdate.length > 0) {
+      try {
+        isMutating.current = true;
+        const res = await fetch("/api/availability", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ slots: slotsToUpdate }),
+        });
+
+        if (!res.ok) {
+          throw new Error("Batch update failed");
+        }
+      } catch (error) {
+        console.error("Batch update error:", error);
+        alert("Erreur lors de la sauvegarde groupée.");
+        fetchDispos(); // Revert on error
+      } finally {
+        setTimeout(() => { isMutating.current = false; }, 500);
+      }
     }
-    fetchDispos();
   };
 
   const toggleSlot = async (dateStr: string, hour: number) => {
@@ -298,17 +313,24 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
 
     try {
       isMutating.current = true;
-      await fetch("/api/availability", {
+      const res = await fetch("/api/availability", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ date: dateStr, hour }),
       });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Erreur serveur");
+      }
+
       // We REMOVED fetchDispos() here to prevent rollback/flickering.
       // The optimistic update above is enough.
       // The background polling will eventually sync any external changes.
     } catch (error) {
       console.error("Error toggling slot:", error);
       // Revert on error (optional but recommended for robust optimistic UI)
+      alert("Erreur lors de la sauvegarde. Veuillez réessayer.");
       fetchDispos();
     } finally {
       // Small delay to ensure server has processed before we resume polling
