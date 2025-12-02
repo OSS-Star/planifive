@@ -172,11 +172,27 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
   const fetchDispos = async () => {
     if (isMutating.current) return; // Skip polling if user is interacting
     try {
-      const res = await fetch("/api/availability", { cache: "no-store" });
+      // Fetch range: Current week - 1 week to Current week + 2 weeks (buffer)
+      const start = new Date(currentMonday);
+      start.setDate(start.getDate() - 7);
+      const end = new Date(currentMonday);
+      end.setDate(end.getDate() + 21);
+
+      const query = `?start=${start.toISOString()}&end=${end.toISOString()}`;
+      const res = await fetch(`/api/availability${query}`, { cache: "no-store" });
+
       if (res.ok) {
         const data = await res.json();
         // Double check mutation status after await
         if (!isMutating.current) {
+          // Merge with existing if needed, but for now replacing is safer to avoid stale deletions
+          // However, replacing might clear slots if we navigate far? 
+          // Actually, we only display the current week. 
+          // If we replace, we lose data for other weeks if we cached them?
+          // The state is `mySlots` (array of strings) and `slotDetails` (object).
+          // If we only fetch a range, we should probably MERGE or handle it carefully.
+          // BUT, simplicity first: If we only view one week, fetching that week + buffer is fine.
+          // If the user navigates far, we fetch again.
           setMySlots(data.mySlots || []);
           setSlotDetails(data.slotDetails || {});
         }

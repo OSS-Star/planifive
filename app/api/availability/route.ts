@@ -11,15 +11,29 @@ type SlotData = {
 // --- GET ---
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session || !session.user?.email || !session.user?.id) return NextResponse.json({ error: "Non connecté" }, { status: 401 });
 
-  // Optimization: Use ID from session (JWT) instead of DB lookup
+  const { searchParams } = new URL(req.url);
+  const startParam = searchParams.get("start");
+  const endParam = searchParams.get("end");
+
   const userId = session.user.id;
 
+  // Default: Fetch from today if no range specified (backward compat)
+  // But ideally we want a range.
+  const whereClause: any = { date: { gte: new Date() } };
+
+  if (startParam && endParam) {
+    whereClause.date = {
+      gte: new Date(startParam),
+      lte: new Date(endParam)
+    };
+  }
+
   const allDispos = await prisma.availability.findMany({
-    where: { date: { gte: new Date() } },
+    where: whereClause,
     include: { user: { select: { id: true, name: true, image: true } } }
   });
 
