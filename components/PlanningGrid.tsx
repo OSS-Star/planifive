@@ -51,6 +51,8 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
 
   // Ref to track if we are currently mutating data (to pause polling)
   const isMutating = useRef(false);
+  // Ref to track the timestamp of the last mutation to discard stale fetches
+  const lastMutationTime = useRef(0);
 
   useEffect(() => {
     fetchDispos();
@@ -171,6 +173,9 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
 
   const fetchDispos = async () => {
     if (isMutating.current) return; // Skip polling if user is interacting
+
+    const fetchStartTime = Date.now();
+
     try {
       // Fetch range: Current week - 1 week to Current week + 2 weeks (buffer)
       const start = new Date(currentMonday);
@@ -183,8 +188,9 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
 
       if (res.ok) {
         const data = await res.json();
-        // Double check mutation status after await
-        if (!isMutating.current) {
+
+        // STALE CHECK: If a mutation happened AFTER this fetch started, discard the result.
+        if (!isMutating.current && lastMutationTime.current < fetchStartTime) {
           // Merge with existing if needed, but for now replacing is safer to avoid stale deletions
           // However, replacing might clear slots if we navigate far? 
           // Actually, we only display the current week. 
@@ -212,6 +218,10 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
 
   const applyDragSelection = async () => {
     if (!dragStart || !dragEnd || !session?.user?.id) return;
+
+    // Update mutation timestamp
+    lastMutationTime.current = Date.now();
+
     const minDay = Math.min(dragStart.dayIndex, dragEnd.dayIndex);
     const maxDay = Math.max(dragStart.dayIndex, dragEnd.dayIndex);
     const minHour = Math.min(dragStart.hour, dragEnd.hour);
@@ -249,6 +259,7 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
     if (slotsToUpdate.length > 0) {
       try {
         isMutating.current = true;
+        lastMutationTime.current = Date.now();
         const res = await fetch("/api/availability", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -273,6 +284,8 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
       alert("Connecte-toi pour voter !");
       return;
     }
+
+    lastMutationTime.current = Date.now();
 
     const key = `${dateStr}-${hour}`;
     const isSelected = mySlots.includes(key);
@@ -329,6 +342,7 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
 
     try {
       isMutating.current = true;
+      lastMutationTime.current = Date.now();
       const res = await fetch("/api/availability", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
