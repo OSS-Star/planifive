@@ -534,7 +534,7 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
       <div className="w-full h-full bg-[#121212] rounded-[32px] border border-[#222] flex flex-col overflow-hidden shadow-2xl relative select-none">
 
         {/* HEADER GRILLE */}
-        <div className="flex items-center justify-between px-6 bg-[#181818] border-b border-[#282828] shrink-0 h-16">
+        <div className="flex items-center justify-between px-6 bg-[#181818] border-b border-[#282828] shrink-0 h-16 relative">
           <div className="flex items-center gap-4">
             <button onClick={() => changeWeek(-1)} className="p-2 hover:bg-gray-700/50 rounded-full text-gray-400 hover:text-white transition-all duration-300 hover:scale-110 active:scale-95"><ChevronLeft size={18} /></button>
             <div className="flex items-center gap-2 px-2">
@@ -545,6 +545,20 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
             </div>
             <button onClick={() => changeWeek(1)} className="p-2 hover:bg-gray-700/50 rounded-full text-gray-400 hover:text-white transition-all duration-300 hover:scale-110 active:scale-95"><ChevronRight size={18} /></button>
           </div>
+
+          {/* CENTERED SAVE BUTTON */}
+          {unsavedChanges && (
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+              <ActionButton
+                onClick={saveChanges}
+                loading={isSaving}
+                label={`SAUVEGARDER (${mySlots.length})`}
+                icon={<Save size={14} />}
+                green
+                className="rounded-full shadow-[0_0_15px_rgba(34,197,94,0.3)]"
+              />
+            </div>
+          )}
 
           <div className="flex h-full">
             <ActionButton
@@ -756,20 +770,6 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
           </AnimatePresence>
         </div>
       </div>
-
-      {/* FLOATING SAVE BUTTON */}
-      {unsavedChanges && (
-        <div style={{ position: 'fixed', top: '80px', right: '40px', zIndex: 9999 }}>
-          <button
-            onClick={saveChanges}
-            disabled={isSaving}
-            className="bg-[#1ED760] text-black font-bold px-6 py-2 rounded-full shadow-[0_0_20px_rgba(30,215,96,0.4)] hover:scale-105 active:scale-95 transition-all flex items-center gap-2 text-sm border-2 border-white/10"
-          >
-            {isSaving ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
-            <span>SAUVEGARDER ({mySlots.length})</span>
-          </button>
-        </div>
-      )}
 
       {/* Modal de confirmation */}
       <ConfirmModal
