@@ -530,7 +530,7 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
   console.log("🟣 Rendering PlanningGrid - modalOpen:", modalOpen, "pendingAction:", pendingAction);
 
   return (
-    <div className="relative w-full h-full">
+    <>
       <div className="w-full h-full bg-[#121212] rounded-[32px] border border-[#222] flex flex-col overflow-hidden shadow-2xl relative select-none">
 
         {/* HEADER GRILLE */}
@@ -564,20 +564,6 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
             />
           </div>
         </div>
-
-        {/* FLOATING SAVE BUTTON - Absolute positioning relative to container */}
-        {unsavedChanges && (
-          <div className="absolute -top-12 right-0 z-[2000]">
-            <button
-              onClick={saveChanges}
-              disabled={isSaving}
-              className="bg-[#1ED760] text-black font-bold px-6 py-2 rounded-full shadow-[0_0_20px_rgba(30,215,96,0.4)] hover:scale-105 active:scale-95 transition-all flex items-center gap-2 text-sm border-2 border-white/10"
-            >
-              {isSaving ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
-              <span>SAUVEGARDER ({mySlots.length})</span>
-            </button>
-          </div>
-        )}
 
         {/* ZONE GRILLE */}
         <div className="flex-1 relative w-full h-full overflow-hidden bg-[#0F0F0F]">
@@ -771,6 +757,20 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
         </div>
       </div>
 
+      {/* FLOATING SAVE BUTTON */}
+      {unsavedChanges && (
+        <div style={{ position: 'fixed', top: '80px', right: '40px', zIndex: 9999 }}>
+          <button
+            onClick={saveChanges}
+            disabled={isSaving}
+            className="bg-[#1ED760] text-black font-bold px-6 py-2 rounded-full shadow-[0_0_20px_rgba(30,215,96,0.4)] hover:scale-105 active:scale-95 transition-all flex items-center gap-2 text-sm border-2 border-white/10"
+          >
+            {isSaving ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
+            <span>SAUVEGARDER ({mySlots.length})</span>
+          </button>
+        </div>
+      )}
+
       {/* Modal de confirmation */}
       <ConfirmModal
         isOpen={modalOpen}
@@ -794,7 +794,7 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
         }
         type={pendingAction === "deleteCall" ? "danger" : (pendingAction === "apply" ? "apply" : "save")}
       />
-    </div>
+    </>
   );
 }
 
