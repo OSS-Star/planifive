@@ -195,11 +195,52 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
 
         // STALE CHECK: If a mutation happened AFTER this fetch started, discard the result.
         if (!isMutating.current && lastMutationTime.current < fetchStartTime) {
-          // Only update mySlots if NO unsaved changes
-          if (!unsavedChanges) {
+
+          let nextSlotDetails = data.slotDetails || {};
+
+          // OPTIMIZATION: Merge server data with local optimistic state if unsaved
+          if (unsavedChanges && session?.user?.id) {
+            // 1. Deep copy to avoid mutating data.slotDetails directly
+            // (Simpler: just iterate and create new objects where needed)
+            const mergedDetails = { ...nextSlotDetails };
+
+            // 2. Remove "Me" from ALL server slots (to clear old server state about me)
+            Object.keys(mergedDetails).forEach(key => {
+              const details = { ...mergedDetails[key] }; // Copy level 2
+              const userIndex = details.users.findIndex((u: any) => u.id === session.user?.id);
+              if (userIndex !== -1) {
+                details.users = details.users.filter((u: any) => u.id !== session.user?.id);
+                details.count = Math.max(0, details.count - 1);
+                mergedDetails[key] = details;
+              }
+            });
+
+            // 3. Add "Me" to slots based on local mySlots
+            mySlots.forEach(key => {
+              // Ensure slot object exists
+              const details = mergedDetails[key] ? { ...mergedDetails[key] } : { users: [], count: 0 };
+
+              // Add me if not present (should not be present due to step 2)
+              details.users = [
+                ...details.users,
+                {
+                  id: session.user?.id,
+                  name: session.user?.name || "Moi",
+                  image: session.user?.image || null
+                }
+              ];
+              details.count++;
+
+              mergedDetails[key] = details;
+            });
+
+            nextSlotDetails = mergedDetails;
+          } else {
+            // Only update mySlots if NO unsaved changes
             setMySlots(data.mySlots || []);
           }
-          setSlotDetails(data.slotDetails || {});
+
+          setSlotDetails(nextSlotDetails);
         }
       }
     } catch (error) { console.error(error); }
@@ -260,9 +301,9 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
       lastMutationTime.current = Date.now(); // Reset stale check
       await fetchDispos();
 
-    } catch (error) {
+    } catch (error: any) {
       console.error("Save error:", error);
-      alert("Erreur lors de la sauvegarde.");
+      alert(`Erreur lors de la sauvegarde: ${error.message || "Erreur inconnue"}`);
     } finally {
       setIsSaving(false);
     }
@@ -526,13 +567,13 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
 
         {/* FLOATING SAVE BUTTON */}
         {unsavedChanges && (
-          <div className="fixed top-24 right-8 z-[2000]">
+          <div className="fixed top-[74px] right-8 z-[2000]">
             <button
               onClick={saveChanges}
               disabled={isSaving}
-              className="bg-[#1ED760] text-black font-bold px-6 py-3 rounded-full shadow-[0_0_20px_rgba(30,215,96,0.4)] hover:scale-105 active:scale-95 transition-all flex items-center gap-2"
+              className="bg-[#1ED760] text-black font-bold px-6 py-2 rounded-full shadow-[0_0_20px_rgba(30,215,96,0.4)] hover:scale-105 active:scale-95 transition-all flex items-center gap-2 text-sm border-2 border-white/10"
             >
-              {isSaving ? <Loader2 className="animate-spin" /> : <Save size={20} />}
+              {isSaving ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
               <span>SAUVEGARDER ({mySlots.length})</span>
             </button>
           </div>

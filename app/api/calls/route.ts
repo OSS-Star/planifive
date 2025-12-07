@@ -67,7 +67,7 @@ export async function POST(req: Request) {
             title: "📢 NOUVEL APPEL FIVE !",
             description: `**${user.name || "Un joueur"}** lance un appel pour un Five !\n\n📅 **${dateStr}**\n⏰ **${hour}h00**\n⏱️ **Durée : ${durationStr}**\n📍 **${location}**\n\n👉 Connectez-vous pour rejoindre !`,
             color: 5763719, // #57F287 (Green)
-            url: "https://five-planner.vercel.app",
+            url: "https://planifive.vercel.app/",
             fields: [
                 {
                     name: "Créneau réservé",

@@ -59,7 +59,7 @@ export async function GET(req: Request) {
             fields: [
                 { name: "👥 Inscrits", value: `${count}/10`, inline: true },
                 { name: "🔥 Manquants", value: `${missing} joueurs`, inline: true },
-                { name: "🔗 Rejoindre", value: "[Clique ici pour compléter le Five !](https://five-planner.vercel.app/)" }
+                { name: "🔗 Rejoindre", value: "[Clique ici pour compléter le Five !](https://planifive.vercel.app/)" }
             ],
             footer: { text: "Planifive • Reminder" },
             timestamp: new Date().toISOString(),

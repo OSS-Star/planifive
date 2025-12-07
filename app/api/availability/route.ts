@@ -140,7 +140,7 @@ export async function POST(req: Request) {
             { name: "📅 Date", value: dateStr, inline: true },
             { name: "⏰ Session impactée", value: `${startH}h - ${startH + 3}h`, inline: true },
             { name: "📉 Action", value: "Le statut confirmé a été révoqué.", inline: false },
-            { name: "🔗 Remonter l'équipe", value: "[Clique ici](https://five-planner.vercel.app/)" }
+            { name: "🔗 Remonter l'équipe", value: "[Clique ici](https://planifive.vercel.app/)" }
           ],
           footer: { text: "Planifive • Désistement" },
           timestamp: new Date().toISOString(),
@@ -223,7 +223,7 @@ export async function POST(req: Request) {
                 { name: "📅 Date", value: dateStr, inline: true },
                 { name: "⏰ Créneaux", value: `${startH}h - ${startH + 1}h - ${startH + 2}h`, inline: true },
                 { name: "⚽ Joueurs présents", value: playersList || "Aucun joueur trouvé", inline: false },
-                { name: "🔗 Rejoindre", value: "[Clique ici](https://five-planner.vercel.app/)" }
+                { name: "🔗 Rejoindre", value: "[Clique ici](https://planifive.vercel.app/)" }
               ],
               footer: { text: "Planifive • Golden Session" },
               timestamp: new Date().toISOString(),
@@ -269,33 +269,56 @@ export async function PUT(req: Request) {
     }
 
     const startDate = new Date(start);
+    // Ensure startDate is at 00:00:00.000 (It should be already if string is YYYY-MM-DD)
+    startDate.setHours(0, 0, 0, 0);
+
     const endDate = new Date(end);
+    // Ensure endDate covers the ENTIRE day (23:59:59.999)
+    endDate.setHours(23, 59, 59, 999);
 
-    // 1. Delete all existing slots for this user in the range
-    const deleteResult = await prisma.availability.deleteMany({
-      where: {
-        userId: userId,
-        date: { gte: startDate, lte: endDate }
+    // Prepare data for createMany
+    // Remove duplicates from client if any
+    const uniqueSlots = new Set<string>();
+    const data: any[] = [];
+
+    for (const s of slots) {
+      // Ensure we only process slots within our declared range (Safety)
+      const slotDate = new Date(s.date);
+      // Compare timestamps
+      if (slotDate.getTime() >= startDate.getTime() && slotDate.getTime() <= endDate.getTime()) {
+        const key = `${s.date}-${s.hour}`;
+        if (!uniqueSlots.has(key)) {
+          uniqueSlots.add(key);
+          data.push({
+            userId: userId,
+            date: slotDate,
+            hour: s.hour
+          });
+        }
       }
-    });
-    console.log(`[PUT] Deleted ${deleteResult.count} existing slots.`);
-
-    // 2. Insert new slots
-    if (slots.length > 0) {
-      // Prepare data for createMany
-      const data = slots.map((s: any) => ({
-        userId: userId,
-        date: new Date(s.date),
-        hour: s.hour
-      }));
-
-      await prisma.availability.createMany({
-        data: data
-      });
-      console.log(`[PUT] Inserted ${data.length} new slots.`);
     }
 
-    return NextResponse.json({ status: "synced", count: slots.length });
+    // Usar transaction to prevent partial state
+    await prisma.$transaction(async (tx) => {
+      // 1. Delete all existing slots for this user in the range
+      const deleteResult = await tx.availability.deleteMany({
+        where: {
+          userId: userId,
+          date: { gte: startDate, lte: endDate }
+        }
+      });
+      console.log(`[PUT] Deleted ${deleteResult.count} existing slots.`);
+
+      // 2. Insert new slots
+      if (data.length > 0) {
+        await tx.availability.createMany({
+          data: data
+        });
+        console.log(`[PUT] Inserted ${data.length} new slots.`);
+      }
+    });
+
+    return NextResponse.json({ status: "synced", count: data.length });
   } catch (error) {
     console.error("[PUT] Error syncing slots:", error);
     return NextResponse.json({ error: "Internal Server Error", details: String(error) }, { status: 500 });
