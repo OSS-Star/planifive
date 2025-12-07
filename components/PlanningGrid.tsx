@@ -548,14 +548,14 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
 
           {/* CENTERED SAVE BUTTON */}
           {unsavedChanges && (
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+            <div className="absolute left-1/2 top-0 -translate-x-1/2 z-10 h-full">
               <ActionButton
                 onClick={saveChanges}
                 loading={isSaving}
                 label={`SAUVEGARDER (${mySlots.length})`}
                 icon={<Save size={14} />}
                 green
-                className="rounded-full shadow-[0_0_15px_rgba(34,197,94,0.3)]"
+                className="rounded-none shadow-[0_0_15px_rgba(34,197,94,0.3)] px-8"
               />
             </div>
           )}
