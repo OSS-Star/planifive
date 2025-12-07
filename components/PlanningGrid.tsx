@@ -552,7 +552,7 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
               <ActionButton
                 onClick={saveChanges}
                 loading={isSaving}
-                label={`SAUVEGARDER (${mySlots.length})`}
+                label={`SAUVEGARDER`}
                 icon={<Save size={14} />}
                 green
                 className="rounded-none shadow-[0_0_15px_rgba(34,197,94,0.3)] px-8"
