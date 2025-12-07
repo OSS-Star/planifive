@@ -71,7 +71,7 @@ export async function POST(req: Request) {
             fields: [
                 {
                     name: "Créneau réservé",
-                    value: `${hour}h - ${parseInt(hour) + slotsCount}h`,
+                    value: `${hour}h - ${(parseInt(hour) + slotsCount) % 24 === 0 ? "00" : (parseInt(hour) + slotsCount) % 24}h`,
                     inline: true
                 }
             ],

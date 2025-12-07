@@ -134,11 +134,11 @@ export async function POST(req: Request) {
         const dateStr = targetDate.toLocaleDateString("fr-FR", { weekday: 'long', day: 'numeric', month: 'long' });
         const embed = {
           title: "❌ DÉSISTEMENT SUR UN CRÉNEAU 4H !",
-          description: `${userName} s'est désisté du créneau de ${hour}h, annulant la session de 4h (${startH}h - ${startH + 4}h).`,
+          description: `${userName} s'est désisté du créneau de ${hour}h, annulant la session de 4h (${startH}h - ${(startH + 4) % 24 === 0 ? "00" : (startH + 4) % 24}h).`,
           color: 0xEF4444, // Red
           fields: [
             { name: "📅 Date", value: dateStr, inline: true },
-            { name: "⏰ Session impactée", value: `${startH}h - ${startH + 4}h`, inline: true },
+            { name: "⏰ Session impactée", value: `${startH}h - ${(startH + 4) % 24 === 0 ? "00" : (startH + 4) % 24}h`, inline: true },
             { name: "📉 Action", value: "Le statut confirmé a été révoqué.", inline: false },
             { name: "🔗 Remonter l'équipe", value: "[Clique ici](https://planifive.vercel.app/)" }
           ],
@@ -219,11 +219,11 @@ export async function POST(req: Request) {
 
             const embed = {
               title: "🏆 CRÉNEAU 4H CONFIRMÉ !",
-              description: `Incroyable ! 4 créneaux consécutifs sont complets (${startH}h - ${startH + 4}h) !`,
+              description: `Incroyable ! 4 créneaux consécutifs sont complets (${startH}h - ${(startH + 4) % 24 === 0 ? "00" : (startH + 4) % 24}h) !`,
               color: 0xFACC15, // Gold
               fields: [
                 { name: "📅 Date", value: dateStr, inline: true },
-                { name: "⏰ Créneaux", value: `${startH}h - ${startH + 1}h - ${startH + 2}h - ${startH + 3}h`, inline: true },
+                { name: "⏰ Créneaux", value: `${startH}h - ${startH + 1}h - ${startH + 2}h - ${(startH + 3) === 24 ? "00" : startH + 3}h`, inline: true },
                 { name: "⚽ Joueurs présents", value: playersList || "Aucun joueur trouvé", inline: false },
                 { name: "🔗 Rejoindre", value: "[Clique ici](https://planifive.vercel.app/)" }
               ],
