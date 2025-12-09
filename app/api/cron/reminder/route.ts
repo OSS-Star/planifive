@@ -12,18 +12,18 @@ export async function GET(req: Request) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        // 1. Find the most popular 4H slot in the next 7 days
+        // 1. Find the most popular 4H slot in the next 21 days
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        const sevenDaysLater = new Date(today);
-        sevenDaysLater.setDate(today.getDate() + 7);
+        const searchEnd = new Date(today);
+        searchEnd.setDate(today.getDate() + 21);
 
-        // Fetch all availabilities for the next 7 days
+        // Fetch all availabilities for the next 21 days
         const availabilities = await prisma.availability.findMany({
             where: {
                 date: {
                     gte: today,
-                    lt: sevenDaysLater,
+                    lt: searchEnd,
                 },
             },
             select: {
