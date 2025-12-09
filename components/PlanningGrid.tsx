@@ -722,7 +722,7 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
                                     {/* User requested to remove the call button when people present */}
                                   </div>
                                   {isGold ? (
-                                    <span className="text-[9px] font-black text-yellow-500 uppercase tracking-widest animate-pulse">Créneaux 4H</span>
+                                    <span className="text-[9px] font-black text-yellow-500 uppercase tracking-widest animate-pulse">Matchs 4H</span>
                                   ) : activeCall ? (
                                     <span className="text-[9px] font-black text-[#5865F2] uppercase tracking-widest flex items-center gap-1">
                                       <Megaphone size={10} /> APPEL EN COURS
