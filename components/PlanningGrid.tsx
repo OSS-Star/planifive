@@ -665,29 +665,15 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
                       } else if (isFull) {
                         bgClass = "bg-red-500/20";
                       } else if (activeCall) {
-                        bgClass = "bg-[#5865F2]/20";
+                        bgClass = "call-active-slot";
                       }
 
-                      // Add blue border/glow if active call
+                      // Extra classes logic
                       if (activeCall) {
-                        extraClasses += " border-[#5865F2]";
-                        // Add blue glow/shadow
-                        if (!isSelected) {
-                          // If not selected, we apply the blue glow via class or style. 
-                          // Let's use style to be safe and consistent with the user request for "degradé autour"
-                          cellStyle.boxShadow = 'inset 0 0 20px rgba(88,101,242,0.3), 0 0 15px rgba(88, 101, 242, 0.6)';
-                        } else {
-                          // If selected, we have green bg + blue border. 
-                          // User wants blue gradient around it? "le bleu ait le degradé autour bleu"
-                          // So we combine green bg with blue outer glow?
-                          // Let's try to combine shadows.
-                          cellStyle.boxShadow = 'inset 0 0 20px rgba(0,0,0,0.2), 0 0 15px rgba(88, 101, 242, 0.8)'; // Blue outer glow dominates
-                        }
-
+                        // The call-active-slot class handles the border and glow animations
+                        // We might want to keep the selected state distinctive though
                         if (isSelected) {
-                          extraClasses += " border-2";
-                        } else {
-                          extraClasses += " border";
+                          extraClasses += " border-2 border-[#5865F2]";
                         }
                       } else if (!isSelected && !isGold && !isFull) {
                         extraClasses += " hover:bg-[#252525]";
@@ -711,7 +697,7 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
                           {/* TOOLTIP - Conditional Positioning */}
                           {!isDragging && (
                             <div
-                              className={`absolute z-[1000] bottom-full mb-2 hidden group-hover:block pointer-events-auto ${i === 0 ? "left-full ml-2" : "right-full mr-2"
+                              className={`absolute z-[1000] bottom-full pb-2 hidden group-hover:block pointer-events-auto ${i === 0 ? "left-full ml-2" : "right-full mr-2"
                                 }`}
                               onClick={(e) => e.stopPropagation()}
                             >
@@ -743,7 +729,7 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
                                   </div>
                                 )}
 
-                                <div className="flex flex-col gap-2 max-h-[180px] overflow-y-auto custom-scrollbar">
+                                <div className="flex flex-col gap-2">
                                   {details.users.map((u, idx) => (
                                     <div key={idx} className="flex items-center gap-8">
                                       <img

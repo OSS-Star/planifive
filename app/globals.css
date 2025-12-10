@@ -355,6 +355,7 @@ textarea {
   border: none !important;
   outline: none !important;
   box-shadow: none !important;
+  transition: all 0.2s ease;
 }
 
 /* Smooth transitions pour tous les éléments interactifs */
@@ -417,6 +418,75 @@ a {
       rgba(255, 255, 255, 0.3),
       transparent);
   animation: goldenShimmer 3s ease-in-out infinite;
+}
+
+/* ===== CALL ACTIVE SLOT ANIMATION ===== */
+/* Dynamic Blue Pulse/Rotate Effect */
+@keyframes bluePulse {
+  0% {
+    box-shadow: inset 0 0 20px rgba(88, 101, 242, 0.3), 0 0 10px rgba(88, 101, 242, 0.5);
+  }
+
+  50% {
+    box-shadow: inset 0 0 30px rgba(88, 101, 242, 0.5), 0 0 20px rgba(88, 101, 242, 0.8);
+  }
+
+  100% {
+    box-shadow: inset 0 0 20px rgba(88, 101, 242, 0.3), 0 0 10px rgba(88, 101, 242, 0.5);
+  }
+}
+
+@keyframes borderRotate {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+.call-active-slot {
+  position: relative;
+  z-index: 1;
+  background-color: rgba(88, 101, 242, 0.15) !important;
+  /* Ensure content stays on top of the pseudo-element */
+}
+
+/* This creates the "rotating border" effect */
+.call-active-slot::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 0;
+  /* Match grid cell */
+  border: 2px solid transparent;
+  /* Placeholder */
+  background: linear-gradient(90deg, #5865F2, #00C7FF, #5865F2, #00C7FF);
+  background-size: 300% 300%;
+  animation: borderRotate 3s linear infinite;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0.8;
+}
+
+/* Add a glow inside/outside as well */
+.call-active-slot::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(88, 101, 242, 0.2), transparent 70%);
+  animation: bluePulse 2s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
 }
 
 
