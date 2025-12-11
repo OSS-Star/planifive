@@ -612,6 +612,7 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
         {/* ZONE GRILLE */}
         {/* Debug State Changes */}
 
+        return (
         <div className="flex flex-col select-none relative h-full">
           {/* DEBUG HUD */}
           <div className="bg-yellow-100 text-black p-2 border-b-4 border-yellow-500 z-[99999] flex gap-4 items-center">
