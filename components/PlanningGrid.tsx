@@ -649,18 +649,13 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
                       );
 
                       // Dynamic Styles
-                      let innerBgClass = ""; // For the Active Call visual layer
                       let parentClasses = `relative group transition-all duration-200 border-b border-r border-[#222] cursor-pointer flex flex-col items-center justify-center group-hover:z-50`;
                       const parentStyle: React.CSSProperties = {};
 
                       // PRIORITY: Active Call > Selection > Golden > Full
                       if (activeCall) {
-                        // Active Call uses the decoupled inner div for valid layering
-                        innerBgClass = "call-active-slot";
-                        if (isSelected) {
-                          innerBgClass += " selected";
-                        }
-                        // We leave parent style empty/default, the inner div covers it.
+                        // Logic handled in Render with Explicit DOM layers
+                        // We leave parent style empty/default.
 
                       } else if (isSelected) {
                         // Standard Selection: Use robust inline style on PARENT
@@ -685,8 +680,23 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
                           style={parentStyle}
                           className={parentClasses}
                         >
-                          {/* VISUAL LAYER (Active Call Only) */}
-                          {activeCall && <div className={`absolute inset-0 ${innerBgClass} pointer-events-none`}></div>}
+                          {/* VISUAL LAYER (Active Call Only) - EXPLICIT LAYERS */}
+                          {activeCall && (
+                            <>
+                              {/* Layer 1: Rotating Gradient Border */}
+                              <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+                                <div
+                                  className="absolute -inset-[50%] bg-[conic-gradient(transparent,transparent,#5865F2,#00C7FF,#5865F2)]"
+                                  style={{ animation: 'borderSpin 4s linear infinite' }}
+                                />
+                              </div>
+                              {/* Layer 2: Inner Background Color (Masking the center) */}
+                              <div
+                                className="absolute inset-[4px] z-10 pointer-events-none transition-colors duration-200"
+                                style={{ backgroundColor: isSelected ? '#22c55e' : '#1A1A1A' }}
+                              />
+                            </>
+                          )}
 
                           {count > 0 && (
                             <div className="w-full h-full flex items-center justify-center pointer-events-none relative z-50">
