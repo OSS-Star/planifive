@@ -31,21 +31,6 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
 
     const fetchResponses = async () => {
         try {
-            // We assume PlanningGrid might pass responses if available, 
-            // but fetching fresh data is safer. 
-            // Or we can create a GET route, OR just rely on what is passed?
-            // "PlanningGrid" fetches calls. Does it fetch responses?
-            // The current "GET /api/calls" likely doesn't include responses. 
-            // We need to either update GET /api/calls or fetch here.
-            // Let's create a quick fetch inside this component or assume we update GET /api/calls later.
-            // For now, let's fetch specific call details (?) 
-            // actually, let's assume valid data flows in or we fetch.
-            // I'll implement a simple fetch to a new endpoint or query param?
-            // Let's use `GET /api/calls?id=...` which implies obtaining details.
-            // I'll update GET /api/calls later to include responses.
-            // For now, let's pretend `call` has `responses`.
-            // If not, we might need to fetch.
-
             // Temporary: Fetch fresh call data with responses
             const res = await fetch(`/api/calls?id=${call.id}`);
             if (res.ok) {
@@ -159,6 +144,138 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
                             </div>
 
                             {/* 2. Creator */}
+                            <div className="flex items-center gap-3 text-sm font-bold text-gray-300">
+                                <UserIcon size={16} />
+                                <span>PAR {call.creator?.name || "???"}</span>
+                            </div>
 
-                            return createPortal(modalContent, document.body);
+                            {/* 3. Location */}
+                            <div className="flex items-center gap-3 text-sm font-bold text-gray-300">
+                                <MapPin size={16} />
+                                <span>{call.location}</span>
+                            </div>
+                        </div>
+
+                        {/* Close/Delete */}
+                        <div className="flex items-center gap-2">
+                            {session?.user?.id === call?.creatorId && (
+                                <button
+                                    onClick={async () => {
+                                        if (!confirm("Supprimer cet appel ?")) return;
+                                        setLoading(true);
+                                        await fetch(`/api/calls?id=${call.id}`, { method: "DELETE" });
+                                        if (onResponseUpdate) onResponseUpdate();
+                                        onClose();
+                                        setLoading(false);
+                                    }}
+                                    className="p-2 hover:bg-red-500/10 text-red-500 rounded-full transition-colors"
+                                    title="Supprimer l'appel"
+                                >
+                                    <Trash2 size={18} />
+                                </button>
+                            )}
+                            <button
+                                onClick={onClose}
+                                className="p-2 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Content: 2 Columns */}
+                <div className="flex-1 overflow-y-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                    {/* Left: ACCEPTS */}
+                    <div className="bg-[#141414] rounded-3xl p-5 border border-[#1f1f1f] flex flex-col h-full shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)]">
+                        <div className="mb-4 pb-2 border-b border-[#222]">
+                            <h3 className="text-green-500 font-bold text-[10px] uppercase tracking-[0.2em] flex items-center gap-2">
+                                <Check size={12} /> Présents ({responses.accepted.length})
+                            </h3>
+                        </div>
+
+                        <div className="space-y-1 overflow-y-auto pr-1 custom-scrollbar">
+                            {responses.accepted.map((u: any, idx) => (
+                                <div key={idx} className="flex items-center gap-4 p-1.5 rounded-lg hover:bg-[#1a1a1a] transition-colors group">
+                                    <div style={{ width: '24px', height: '24px', minWidth: '24px' }} className="rounded-full bg-gray-800 overflow-hidden shrink-0 ring-1 ring-[#333]">
+                                        {u.image ? <img src={u.image} className="w-full h-full object-cover" /> : null}
+                                    </div>
+                                    <span className="text-gray-400 group-hover:text-gray-200 text-xs font-medium truncate flex-1 transition-colors">
+                                        {u.name}
+                                    </span>
+                                    {u.isImplicit && (
+                                        <span className="text-[9px] text-[#1ED760] font-bold opacity-70">
+                                            (DISPO)
+                                        </span>
+                                    )}
+                                </div>
+                            ))}
+                            {responses.accepted.length === 0 && (
+                                <div className="text-gray-700 italic text-[10px] text-center py-8">
+                                    En attente...
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Right: REFUSALS */}
+                    <div className="bg-[#141414] rounded-3xl p-5 border border-[#1f1f1f] flex flex-col h-full shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)]">
+                        <div className="mb-4 pb-2 border-b border-[#222]">
+                            <h3 className="text-red-500 font-bold text-[10px] uppercase tracking-[0.2em] flex items-center gap-2">
+                                <XCircle size={12} /> Absents ({responses.declined.length})
+                            </h3>
+                        </div>
+
+                        <div className="space-y-1 overflow-y-auto pr-1 custom-scrollbar">
+                            {responses.declined.map((u: any, idx) => (
+                                <div key={idx} className="flex items-center gap-4 p-1.5 rounded-lg hover:bg-[#1a1a1a] transition-colors opacity-50 hover:opacity-100 group">
+                                    <div style={{ width: '24px', height: '24px', minWidth: '24px' }} className="rounded-full bg-gray-800 overflow-hidden shrink-0 grayscale ring-1 ring-[#333]">
+                                        {u.image ? <img src={u.image} className="w-full h-full object-cover" /> : null}
+                                    </div>
+                                    <span className="text-gray-500 group-hover:text-gray-400 text-xs font-medium line-through decoration-red-900 truncate">
+                                        {u.name}
+                                    </span>
+                                </div>
+                            ))}
+                            {responses.declined.length === 0 && (
+                                <div className="text-gray-700 italic text-[10px] text-center py-8">
+                                    Personne
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Footer: Actions */}
+                <div className="px-8 py-10 bg-gradient-to-t from-[#0a0a0a] to-[#0F0F0F] border-t border-[#1f1f1f] flex justify-center gap-4 items-center">
+                    <button
+                        onClick={() => handleRespond("ACCEPTED")}
+                        disabled={loading}
+                        className={`h-16 w-52 rounded-full font-black text-sm tracking-[0.15em] uppercase transition-all flex items-center justify-center gap-3 shadow-2xl ${myStatus === "ACCEPTED"
+                            ? "bg-[#132e13] text-green-500 border border-green-900/50 cursor-default opacity-80"
+                            : "bg-[#1ED760] text-black hover:bg-[#1fdf64] hover:scale-105 hover:shadow-[0_0_30px_rgba(30,215,96,0.3)]"
+                            }`}
+                    >
+                        {myStatus === "ACCEPTED" ? <Check size={18} strokeWidth={3} /> : null}
+                        {myStatus === "ACCEPTED" ? "PRÉSENT" : "ACCEPTER"}
+                    </button>
+
+                    <button
+                        onClick={() => handleRespond("DECLINED")}
+                        disabled={loading}
+                        className={`h-16 w-52 rounded-full font-black text-sm tracking-[0.15em] uppercase transition-all flex items-center justify-center gap-3 shadow-2xl ${myStatus === "DECLINED"
+                            ? "bg-[#2e1313] text-red-500 border border-red-900/50 cursor-default opacity-80"
+                            : "bg-[#E50914] text-white hover:bg-[#b20710] border border-transparent shadow-[0_0_20px_rgba(229,9,20,0.4)]"
+                            }`}
+                    >
+                        {myStatus === "DECLINED" ? <X size={18} strokeWidth={3} /> : null}
+                        {myStatus === "DECLINED" ? "REFUSÉ" : "REFUSER"}
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+
+    return createPortal(modalContent, document.body);
 }
