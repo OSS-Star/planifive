@@ -28,6 +28,8 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
 
     console.log("MODAL RENDER", { isOpen, hasCall: !!call });
 
+    // if (!call) return null; // Keep rendering to debug
+    if (!isOpen) return null; // Standard conditional rendering
     if (!call) return null;
 
     const fetchResponses = async () => {

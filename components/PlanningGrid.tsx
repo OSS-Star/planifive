@@ -411,6 +411,7 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
 
     if (callOnSlot) {
       console.log("OPENING MODAL FOR", callOnSlot.id);
+      alert("Clic détecté ! Ouverture du modal pour : " + callOnSlot.location);
       setSelectedActiveCall(callOnSlot);
       setDetailsModalOpen(true);
       return;
