@@ -60,6 +60,11 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
   // Ref to track the timestamp of the last mutation to discard stale fetches
   const lastMutationTime = useRef(0);
 
+  // Debug State Changes
+  useEffect(() => {
+    console.log("👉 STATE CHANGE: detailsModalOpen =", detailsModalOpen, "Selected:", selectedActiveCall?.id);
+  }, [detailsModalOpen, selectedActiveCall]);
+
   // MANUAL SAVE MODE
   const [unsavedChanges, setUnsavedChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -606,11 +611,7 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
 
         {/* ZONE GRILLE */}
         {/* Debug State Changes */}
-  useEffect(() => {
-          console.log("👉 STATE CHANGE: detailsModalOpen =", detailsModalOpen, "Selected:", selectedActiveCall?.id);
-  }, [detailsModalOpen, selectedActiveCall]);
 
-        return (
         <div className="flex flex-col select-none relative h-full">
           {/* DEBUG HUD */}
           <div className="bg-yellow-100 text-black p-2 border-b-4 border-yellow-500 z-[99999] flex gap-4 items-center">
