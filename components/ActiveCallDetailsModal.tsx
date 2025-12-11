@@ -103,7 +103,19 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
     return (
         isOpen ? (
             <div
-                className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+                style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)', // Restored standard dark overlay
+                    zIndex: 9999999, // High z-index to ensure visibility
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backdropFilter: 'blur(4px)'
+                }}
                 onClick={onClose}
             >
                 <div
