@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "next lint",
+    "push": "git add . && git commit -m \"update\" && git push",
     "postinstall": "prisma generate"
   },
   "dependencies": {
