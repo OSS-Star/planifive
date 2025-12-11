@@ -149,49 +149,49 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
                     background: 'linear-gradient(to bottom right, #222, #181818)',
                     padding: '1.5rem',
                     borderBottom: '1px solid #333',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'start'
+                    // display: 'flex', // Standard block for title then substring
+                    // justifyContent: 'space-between',
+                    // alignItems: 'start'
                 }}>
-                    <div>
-                        <h2 className="text-xl font-bold text-white mb-1 flex items-center gap-2">
-                            <MapPin size={20} className="text-white" />
-                            {call.location}
-                        </h2>
-                        <div className="flex items-center gap-8 text-gray-400 text-xs uppercase tracking-wider font-medium">
-                            <div className="flex items-center gap-1.5">
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <h2 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
+                                <MapPin size={20} className="text-white" />
+                                {call.location}
+                            </h2>
+                            <div className="flex items-center gap-3 text-gray-400 text-xs uppercase tracking-wider font-medium">
                                 <Clock size={14} />
                                 <span>{call.hour}H - {call.hour + (call.duration === 90 ? 5 : 4)}H00</span>
-                            </div>
-                            <div className="flex items-center gap-1.5">
-                                <UserIcon size={14} />
-                                <span>PAR {call.creator?.name || "???"}</span>
+                                <div className="flex items-center gap-1.5 ml-2">
+                                    <UserIcon size={14} />
+                                    <span>PAR {call.creator?.name || "???"}</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        {session?.user?.id === call?.creatorId && (
+                        <div className="flex items-center gap-2">
+                            {session?.user?.id === call?.creatorId && (
+                                <button
+                                    onClick={async () => {
+                                        if (!confirm("Supprimer cet appel ?")) return;
+                                        setLoading(true);
+                                        await fetch(`/api/calls?id=${call.id}`, { method: "DELETE" });
+                                        if (onResponseUpdate) onResponseUpdate();
+                                        onClose();
+                                        setLoading(false);
+                                    }}
+                                    className="p-2 hover:bg-red-500/10 text-red-500 rounded-full transition-colors"
+                                    title="Supprimer l'appel"
+                                >
+                                    <Trash2 size={18} />
+                                </button>
+                            )}
                             <button
-                                onClick={async () => {
-                                    if (!confirm("Supprimer cet appel ?")) return;
-                                    setLoading(true);
-                                    await fetch(`/api/calls?id=${call.id}`, { method: "DELETE" });
-                                    if (onResponseUpdate) onResponseUpdate();
-                                    onClose();
-                                    setLoading(false);
-                                }}
-                                className="p-2 hover:bg-red-500/10 text-red-500 rounded-full transition-colors"
-                                title="Supprimer l'appel"
+                                onClick={onClose}
+                                className="p-2 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
                             >
-                                <Trash2 size={18} />
+                                <X size={18} />
                             </button>
-                        )}
-                        <button
-                            onClick={onClose}
-                            className="p-2 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
-                        >
-                            <X size={18} />
-                        </button>
+                        </div>
                     </div>
                 </div>
 
@@ -200,19 +200,17 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
 
                     {/* Left: ACCEPTS */}
                     <div className="bg-[#141414] rounded-3xl p-5 border border-[#1f1f1f] flex flex-col h-full shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)]">
-                        <div className="flex items-center justify-between mb-4 pb-2 border-b border-[#222]">
+                        <div className="mb-4 pb-2 border-b border-[#222]">
                             <h3 className="text-green-500 font-bold text-[10px] uppercase tracking-[0.2em] flex items-center gap-2">
-                                <Check size={12} /> Présents
+                                <Check size={12} /> Présents ({responses.accepted.length})
                             </h3>
-                            <span className="bg-[#1a2e1a] text-green-500 text-sm font-bold px-3 py-1 rounded-full border border-green-900/30">
-                                {responses.accepted.length}
-                            </span>
                         </div>
 
                         <div className="space-y-1 overflow-y-auto pr-1 custom-scrollbar">
                             {responses.accepted.map((u: any, idx) => (
-                                <div key={idx} className="flex items-center gap-4 p-1.5 rounded-lg hover:bg-[#1a1a1a] transition-colors group">
-                                    <div className="w-3 h-3 rounded-full bg-gray-800 overflow-hidden shrink-0 ring-1 ring-[#333]">
+                                <div key={idx} className="flex items-center gap-3 p-1.5 rounded-lg hover:bg-[#1a1a1a] transition-colors group">
+                                    {/* Forced inline size to satisfy 'really smaller' */}
+                                    <div style={{ width: '12px', height: '12px' }} className="rounded-full bg-gray-800 overflow-hidden shrink-0 ring-1 ring-[#333]">
                                         {u.image ? <img src={u.image} className="w-full h-full object-cover" /> : null}
                                     </div>
                                     <span className="text-gray-400 group-hover:text-gray-200 text-xs font-medium truncate flex-1 transition-colors">
@@ -235,19 +233,16 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
 
                     {/* Right: REFUSALS */}
                     <div className="bg-[#141414] rounded-3xl p-5 border border-[#1f1f1f] flex flex-col h-full shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)]">
-                        <div className="flex items-center justify-between mb-4 pb-2 border-b border-[#222]">
+                        <div className="mb-4 pb-2 border-b border-[#222]">
                             <h3 className="text-red-500 font-bold text-[10px] uppercase tracking-[0.2em] flex items-center gap-2">
-                                <XCircle size={12} /> Absents
+                                <XCircle size={12} /> Absents ({responses.declined.length})
                             </h3>
-                            <span className="bg-[#2e1a1a] text-red-500 text-sm font-bold px-3 py-1 rounded-full border border-red-900/30">
-                                {responses.declined.length}
-                            </span>
                         </div>
 
                         <div className="space-y-1 overflow-y-auto pr-1 custom-scrollbar">
                             {responses.declined.map((u: any, idx) => (
-                                <div key={idx} className="flex items-center gap-4 p-1.5 rounded-lg hover:bg-[#1a1a1a] transition-colors opacity-50 hover:opacity-100 group">
-                                    <div className="w-3 h-3 rounded-full bg-gray-800 overflow-hidden shrink-0 grayscale ring-1 ring-[#333]">
+                                <div key={idx} className="flex items-center gap-3 p-1.5 rounded-lg hover:bg-[#1a1a1a] transition-colors opacity-50 hover:opacity-100 group">
+                                    <div style={{ width: '12px', height: '12px' }} className="rounded-full bg-gray-800 overflow-hidden shrink-0 grayscale ring-1 ring-[#333]">
                                         {u.image ? <img src={u.image} className="w-full h-full object-cover" /> : null}
                                     </div>
                                     <span className="text-gray-500 group-hover:text-gray-400 text-xs font-medium line-through decoration-red-900 truncate">
