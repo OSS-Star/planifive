@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, Save, Copy, Loader2, Calendar, Megaphone, Tr
 import { motion, AnimatePresence } from "framer-motion";
 import { useSession } from "next-auth/react";
 import ConfirmModal from "./ConfirmModal";
+import ActiveCallVisual from "./ActiveCallVisual";
 
 const HOURS = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
 const DAYS = ["LUN", "MAR", "MER", "JEU", "VEN", "SAM", "DIM"];
@@ -681,26 +682,7 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
                           className={parentClasses}
                         >
                           {/* VISUAL LAYER (Active Call Only) - EXPLICIT LAYERS */}
-                          {activeCall && (
-                            <>
-                              {/* Layer 1: Rotating Gradient Border */}
-                              <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none rounded-[inherit]">
-                                <div
-                                  className="absolute -inset-[50%] animate-spin"
-                                  style={{
-                                    background: 'conic-gradient(from 0deg, transparent 0 50%, #5865F2 70%, #00C7FF 90%, #5865F2 100%)',
-                                    animationDuration: '3s',
-                                    opacity: 1
-                                  }}
-                                />
-                              </div>
-                              {/* Layer 2: Inner Background Color (Masking the center) */}
-                              <div
-                                className="absolute inset-[4px] z-10 pointer-events-none transition-colors duration-200"
-                                style={{ backgroundColor: isSelected ? '#22c55e' : '#1A1A1A' }}
-                              />
-                            </>
-                          )}
+                          {activeCall && <ActiveCallVisual isSelected={isSelected} />}
 
                           {count > 0 && (
                             <div className="w-full h-full flex items-center justify-center pointer-events-none relative z-50">
