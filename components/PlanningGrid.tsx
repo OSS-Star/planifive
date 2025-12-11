@@ -411,7 +411,6 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
 
     if (callOnSlot) {
       console.log("OPENING MODAL FOR", callOnSlot.id);
-      alert("Clic détecté ! Ouverture du modal pour : " + callOnSlot.location);
       setSelectedActiveCall(callOnSlot);
       setDetailsModalOpen(true);
       return;
@@ -686,7 +685,7 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
                       return (
                         <div
                           key={key}
-                          onMouseDown={() => onMouseDown(i, hour)}
+                          onMouseDown={() => !activeCall && onMouseDown(i, hour)}
                           onMouseEnter={() => onMouseEnter(i, hour)}
                           onClick={() => toggleSlot(dateStr, hour)}
                           style={parentStyle}
@@ -803,6 +802,12 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
         }
         type={pendingAction === "deleteCall" ? "danger" : (pendingAction === "apply" ? "apply" : "save")}
       />
+
+      {detailsModalOpen && (
+        <div className="fixed top-0 left-0 bg-red-600 text-white z-[9999999] p-4 font-bold border-4 border-yellow-400">
+          DEBUG: STATE IS OPEN for call {selectedActiveCall?.id}
+        </div>
+      )}
 
       <ActiveCallDetailsModal
         isOpen={detailsModalOpen}
