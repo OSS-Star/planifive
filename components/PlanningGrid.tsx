@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useSession } from "next-auth/react";
 import ConfirmModal from "./ConfirmModal";
 import ActiveCallVisual from "./ActiveCallVisual";
+import ActiveCallDetailsModal from "./ActiveCallDetailsModal";
 
 const HOURS = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
 const DAYS = ["LUN", "MAR", "MER", "JEU", "VEN", "SAM", "DIM"];
@@ -49,6 +50,10 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
   const [modalOpen, setModalOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState<"save" | "apply" | "deleteCall" | null>(null);
   const [callToDelete, setCallToDelete] = useState<string | null>(null);
+
+  // Active Call Details Modal
+  const [detailsModalOpen, setDetailsModalOpen] = useState(false);
+  const [selectedActiveCall, setSelectedActiveCall] = useState<Call | null>(null);
 
   // Ref to track if we are currently mutating data (to pause polling)
   const isMutating = useRef(false);
@@ -393,16 +398,19 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
     const callOnSlot = calls.find(c =>
       new Date(c.date).toDateString() === new Date(dateStr).toDateString() &&
       c.hour <= hour &&
-      hour < c.hour + (c.duration === 90 ? 5 : 4)
+      hour < c.hour + (c.duration === 90 ? 5 : 4) // Logic for 4h blocks? Wait, match logic might be different from simple display. 
+      // Actually, if we want to be precise about "clicking the call":
+      // If the visual component is rendered here, we should be able to click it.
+      // Current logic: c.hour <= hour ...
+      // If it IS a call slot, open the details modal.
     );
 
-    const isCreator = callOnSlot?.creatorId === session?.user?.id;
-
-    // If creator tries to deselect a slot of their call -> Delete the call
-    if (isCreator && isSelected) {
-      setCallToDelete(callOnSlot.id);
-      setPendingAction("deleteCall");
-      setModalOpen(true);
+    if (callOnSlot) {
+      // Open Details Modal for EVERYONE (Creator or User)
+      // Creator can see details/delete there.
+      // User can Accept/Refuse.
+      setSelectedActiveCall(callOnSlot);
+      setDetailsModalOpen(true);
       return;
     }
 
@@ -791,6 +799,16 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
               : "Voulez-vous appliquer le modèle sauvegardé à cette semaine ?"
         }
         type={pendingAction === "deleteCall" ? "danger" : (pendingAction === "apply" ? "apply" : "save")}
+      />
+
+      <ActiveCallDetailsModal
+        isOpen={detailsModalOpen}
+        onClose={() => setDetailsModalOpen(false)}
+        call={selectedActiveCall}
+        onResponseUpdate={() => {
+          fetchCalls();
+          fetchDispos();
+        }}
       />
     </>
   );

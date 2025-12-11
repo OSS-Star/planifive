@@ -58,6 +58,7 @@ model User {
   matchesTeam2 Match[] @relation("Team2")
   
   calls        Call[]
+  callResponses CallResponse[]
 }
 
 model Match {
@@ -139,6 +140,20 @@ model Call {
   createdAt DateTime @default(now())
 
   creator   User     @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  responses CallResponse[]
+}
+
+model CallResponse {
+  id        String   @id @default(cuid())
+  callId    String
+  userId    String
+  status    String   // "ACCEPTED" or "DECLINED"
+  createdAt DateTime @default(now())
+
+  call      Call     @relation(fields: [callId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([callId, userId])
 }
 
 model SlotStatus {

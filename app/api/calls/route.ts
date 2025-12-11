@@ -105,6 +105,13 @@ export async function GET(req: Request) {
                 creator: {
                     select: { name: true, image: true },
                 },
+                responses: {
+                    include: {
+                        user: {
+                            select: { id: true, name: true, image: true }
+                        }
+                    }
+                }
             },
             orderBy: { date: 'asc' },
         });
