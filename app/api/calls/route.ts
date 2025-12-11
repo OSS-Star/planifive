@@ -100,7 +100,7 @@ export async function GET(req: Request) {
                 include: {
                     creator: { select: { name: true, image: true } },
                     responses: { include: { user: { select: { id: true, name: true, image: true } } } }
-                }
+                } as any
             });
             return NextResponse.json(call);
         }
@@ -126,7 +126,7 @@ export async function GET(req: Request) {
                         }
                     }
                 }
-            },
+            } as any,
             orderBy: { date: 'asc' },
         });
 
