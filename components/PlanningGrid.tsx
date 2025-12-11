@@ -664,8 +664,8 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
                         // z-index handled by class
 
                       } else if (isSelected) {
-                        // FORCE GREEN via bgClass on inner div
-                        bgClass = "bg-[#22c55e]";
+                        // FORCE GREEN via inline style on inner div (more robust than class)
+                        innerStyle.backgroundColor = '#22c55e'; // green-500
                         innerStyle.zIndex = 10;
                         innerStyle.boxShadow = 'inset 0 0 20px rgba(0,0,0,0.2), 0 0 10px rgba(34, 197, 94, 0.4)';
                       } else if (isGold) {
