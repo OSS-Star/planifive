@@ -807,6 +807,33 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
         isOpen={detailsModalOpen}
         onClose={() => setDetailsModalOpen(false)}
         call={selectedActiveCall}
+        implicitAttendees={(() => {
+          if (!selectedActiveCall) return [];
+          try {
+            const d = new Date(selectedActiveCall.date);
+            const dateKey = formatDateLocal(d);
+            const startH = selectedActiveCall.hour;
+            // Assuming 4h duration as standard
+            const endH = startH + 4;
+            const lists: any[][] = [];
+            for (let h = startH; h < endH; h++) {
+              const key = `${dateKey}-${h}`;
+              if (slotDetails[key]?.users) {
+                lists.push(slotDetails[key].users);
+              } else {
+                // If a slot is missing data (nobody there), then nobody conforms to "all 4 slots"
+                return [];
+              }
+            }
+
+            if (lists.length === 0) return [];
+
+            // Intersection: Users present in ALL lists
+            return lists[0].filter((u: any) =>
+              lists.every(list => list.some((u2: any) => u2.id === u.id))
+            );
+          } catch (e) { console.error("Error calc implicit", e); return []; }
+        })()}
         onResponseUpdate={() => {
           fetchCalls();
           fetchDispos();

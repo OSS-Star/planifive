@@ -10,9 +10,10 @@ interface ActiveCallDetailsModalProps {
     onClose: () => void;
     call: any; // The call object from PlanningGrid
     onResponseUpdate?: () => void; // Callback to refresh grid/call data
+    implicitAttendees?: any[]; // Users present in the 4h slots
 }
 
-export default function ActiveCallDetailsModal({ isOpen, onClose, call, onResponseUpdate }: ActiveCallDetailsModalProps) {
+export default function ActiveCallDetailsModal({ isOpen, onClose, call, onResponseUpdate, implicitAttendees = [] }: ActiveCallDetailsModalProps) {
     const { data: session } = useSession();
     const [loading, setLoading] = useState(false);
     const [responses, setResponses] = useState<{ accepted: any[], declined: any[] }>({ accepted: [], declined: [] });
@@ -52,10 +53,27 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
     };
 
     const processResponses = (responsesList: any[]) => {
-        const accepted = responsesList.filter((r: any) => r.status === "ACCEPTED").map((r: any) => r.user);
-        const declined = responsesList.filter((r: any) => r.status === "DECLINED").map((r: any) => r.user);
+        // 1. Identify Explicit Actions
+        const explicitAccepted = responsesList.filter((r: any) => r.status === "ACCEPTED");
+        const explicitDeclined = responsesList.filter((r: any) => r.status === "DECLINED");
+        const declinedIds = new Set(explicitDeclined.map((r: any) => r.userId));
+        const acceptedIds = new Set(explicitAccepted.map((r: any) => r.userId));
 
-        setResponses({ accepted, declined });
+        // 2. Build Final Accepted List
+        // Start with Explicit Accepted
+        let finalAccepted = explicitAccepted.map((r: any) => r.user);
+
+        // Add Implicit Attendees (if not explicitly declined AND not already added)
+        implicitAttendees?.forEach(user => {
+            if (!declinedIds.has(user.id) && !acceptedIds.has(user.id)) {
+                finalAccepted.push(user);
+            }
+        });
+
+        // 3. Build Final Declined List (Just explicit declines)
+        const finalDeclined = explicitDeclined.map((r: any) => r.user);
+
+        setResponses({ accepted: finalAccepted, declined: finalDeclined });
 
         if (session?.user?.id) {
             const myResp = responsesList.find((r: any) => r.userId === session.user.id);
