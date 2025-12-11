@@ -149,9 +149,6 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
                     background: 'linear-gradient(to bottom right, #222, #181818)',
                     padding: '1.5rem',
                     borderBottom: '1px solid #333',
-                    // display: 'flex', // Standard block for title then substring
-                    // justifyContent: 'space-between',
-                    // alignItems: 'start'
                 }}>
                     <div className="flex justify-between items-start">
                         <div>
@@ -159,10 +156,12 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
                                 <MapPin size={20} className="text-white" />
                                 {call.location}
                             </h2>
-                            <div className="flex items-center gap-3 text-gray-400 text-xs uppercase tracking-wider font-medium">
-                                <Clock size={14} />
-                                <span>{call.hour}H - {call.hour + (call.duration === 90 ? 5 : 4)}H00</span>
-                                <div className="flex items-center gap-1.5 ml-2">
+                            <div className="flex items-center gap-6 text-gray-400 text-xs uppercase tracking-wider font-medium">
+                                <div className="flex items-center gap-2">
+                                    <Clock size={14} />
+                                    <span>{call.hour}H - {call.hour + (call.duration === 90 ? 5 : 4)}H00</span>
+                                </div>
+                                <div className="flex items-center gap-2">
                                     <UserIcon size={14} />
                                     <span>PAR {call.creator?.name || "???"}</span>
                                 </div>
@@ -208,9 +207,8 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
 
                         <div className="space-y-1 overflow-y-auto pr-1 custom-scrollbar">
                             {responses.accepted.map((u: any, idx) => (
-                                <div key={idx} className="flex items-center gap-3 p-1.5 rounded-lg hover:bg-[#1a1a1a] transition-colors group">
-                                    {/* Forced inline size to satisfy 'really smaller' */}
-                                    <div style={{ width: '12px', height: '12px' }} className="rounded-full bg-gray-800 overflow-hidden shrink-0 ring-1 ring-[#333]">
+                                <div key={idx} className="flex items-center gap-4 p-1.5 rounded-lg hover:bg-[#1a1a1a] transition-colors group">
+                                    <div className="w-6 h-6 rounded-full bg-gray-800 overflow-hidden shrink-0 ring-1 ring-[#333]">
                                         {u.image ? <img src={u.image} className="w-full h-full object-cover" /> : null}
                                     </div>
                                     <span className="text-gray-400 group-hover:text-gray-200 text-xs font-medium truncate flex-1 transition-colors">
@@ -241,8 +239,8 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
 
                         <div className="space-y-1 overflow-y-auto pr-1 custom-scrollbar">
                             {responses.declined.map((u: any, idx) => (
-                                <div key={idx} className="flex items-center gap-3 p-1.5 rounded-lg hover:bg-[#1a1a1a] transition-colors opacity-50 hover:opacity-100 group">
-                                    <div style={{ width: '12px', height: '12px' }} className="rounded-full bg-gray-800 overflow-hidden shrink-0 grayscale ring-1 ring-[#333]">
+                                <div key={idx} className="flex items-center gap-4 p-1.5 rounded-lg hover:bg-[#1a1a1a] transition-colors opacity-50 hover:opacity-100 group">
+                                    <div className="w-6 h-6 rounded-full bg-gray-800 overflow-hidden shrink-0 grayscale ring-1 ring-[#333]">
                                         {u.image ? <img src={u.image} className="w-full h-full object-cover" /> : null}
                                     </div>
                                     <span className="text-gray-500 group-hover:text-gray-400 text-xs font-medium line-through decoration-red-900 truncate">
@@ -260,11 +258,11 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
                 </div>
 
                 {/* Footer: Actions */}
-                <div className="p-8 pt-6 bg-gradient-to-t from-[#0a0a0a] to-[#0F0F0F] border-t border-[#1f1f1f] flex justify-between gap-8 items-center">
+                <div className="p-8 pt-6 bg-gradient-to-t from-[#0a0a0a] to-[#0F0F0F] border-t border-[#1f1f1f] flex justify-center gap-4 items-center">
                     <button
                         onClick={() => handleRespond("ACCEPTED")}
                         disabled={loading}
-                        className={`flex-1 py-2 rounded-full font-black text-xs tracking-[0.15em] uppercase transition-all flex items-center justify-center gap-3 shadow-2xl ${myStatus === "ACCEPTED"
+                        className={`w-40 py-2 rounded-full font-black text-xs tracking-[0.15em] uppercase transition-all flex items-center justify-center gap-3 shadow-2xl ${myStatus === "ACCEPTED"
                             ? "bg-[#132e13] text-green-500 border border-green-900/50 cursor-default opacity-80"
                             : "bg-[#1ED760] text-black hover:bg-[#1fdf64] hover:scale-105 hover:shadow-[0_0_30px_rgba(30,215,96,0.3)]"
                             }`}
@@ -276,7 +274,7 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
                     <button
                         onClick={() => handleRespond("DECLINED")}
                         disabled={loading}
-                        className={`flex-1 py-2 rounded-full font-black text-xs tracking-[0.15em] uppercase transition-all flex items-center justify-center gap-3 shadow-2xl ${myStatus === "DECLINED"
+                        className={`w-40 py-2 rounded-full font-black text-xs tracking-[0.15em] uppercase transition-all flex items-center justify-center gap-3 shadow-2xl ${myStatus === "DECLINED"
                             ? "bg-[#2e1313] text-red-500 border border-red-900/50 cursor-default opacity-80"
                             : "bg-red-600/20 text-red-500 hover:bg-red-600 hover:text-white border border-red-900/50 hover:border-red-500"
                             }`}
