@@ -66,7 +66,7 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
         // Add Implicit Attendees (if not explicitly declined AND not already added)
         implicitAttendees?.forEach(user => {
             if (!declinedIds.has(user.id) && !acceptedIds.has(user.id)) {
-                finalAccepted.push(user);
+                finalAccepted.push({ ...user, isImplicit: true });
             }
         });
 
@@ -93,9 +93,13 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
 
             // 2. If Accepted, AUTO-FILL slots
             if (status === "ACCEPTED" && res.ok) {
-                // Calculate the 4 slots
+                // Ensure we use the exact date string YYYY-MM-DD regardless of timezone shifts
+                // call.date is usually an ISO string from DB.
+                // We want to lock it to the "day" it represents.
+                // Best way: Create Date from ISO, then use UTC methods if stored as UTC, OR use string manipulation if it's "YYYY-MM-DD..."
+                // Assuming call.date comes from Prisma DateTime (ISO).
+                // Let's rely on simple string split if available, or safe date.
                 const d = new Date(call.date);
-                // Safe YYYY-MM-DD format
                 const year = d.getFullYear();
                 const month = String(d.getMonth() + 1).padStart(2, '0');
                 const day = String(d.getDate()).padStart(2, '0');
@@ -103,7 +107,10 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
 
                 const slotsToUpdate = [];
                 // Assume 4h duration
-                for (let h = call.hour; h < call.hour + 4; h++) {
+                // Assuming call.hour is integer (e.g., 20)
+                const startHour = typeof call.hour === 'number' ? call.hour : parseInt(call.hour);
+
+                for (let h = startHour; h < startHour + 4; h++) {
                     slotsToUpdate.push({ date: dateStr, hour: h });
                 }
 
@@ -193,7 +200,10 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
                                             <div className="w-8 h-8 rounded-full bg-gray-700 overflow-hidden">
                                                 {u.image ? <img src={u.image} className="w-full h-full object-cover" /> : null}
                                             </div>
-                                            <span className="text-gray-300 font-medium">{u.name}</span>
+                                            <span className="text-gray-300 font-medium">
+                                                {u.name}
+                                                {u.isImplicit && <span className="text-xs text-[#1ED760] ml-2 font-normal italic">(Dispo)</span>}
+                                            </span>
                                         </div>
                                     ))}
                                     {responses.accepted.length === 0 && (
