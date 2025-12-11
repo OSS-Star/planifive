@@ -196,68 +196,68 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
                 </div>
 
                 {/* Content: 2 Columns */}
-                <div className="flex-1 overflow-y-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="flex-1 overflow-y-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
 
                     {/* Left: ACCEPTS */}
-                    <div className="bg-[#141414] rounded-2xl p-4 border border-[#222] flex flex-col h-full shadow-inner">
-                        <div className="flex items-center justify-between mb-4 pb-2 border-b border-white/5">
-                            <h3 className="text-green-500 font-bold text-xs uppercase tracking-widest flex items-center gap-2">
-                                <Check size={14} /> Présents
+                    <div className="bg-[#141414] rounded-3xl p-5 border border-[#1f1f1f] flex flex-col h-full shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)]">
+                        <div className="flex items-center justify-between mb-4 pb-2 border-b border-[#222]">
+                            <h3 className="text-green-500 font-bold text-[10px] uppercase tracking-[0.2em] flex items-center gap-2">
+                                <Check size={12} /> Présents
                             </h3>
-                            <span className="bg-green-500/10 text-green-500 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                            <span className="bg-[#1a2e1a] text-green-500 text-[9px] font-bold px-2 py-0.5 rounded-full border border-green-900/30">
                                 {responses.accepted.length}
                             </span>
                         </div>
 
-                        <div className="space-y-2 overflow-y-auto pr-1 custom-scrollbar">
+                        <div className="space-y-1 overflow-y-auto pr-1 custom-scrollbar">
                             {responses.accepted.map((u: any, idx) => (
-                                <div key={idx} className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-colors">
-                                    <div className="w-4 h-4 rounded-full bg-gray-700 overflow-hidden shrink-0">
+                                <div key={idx} className="flex items-center gap-3 p-1.5 rounded-lg hover:bg-[#1a1a1a] transition-colors group">
+                                    <div className="w-3 h-3 rounded-full bg-gray-800 overflow-hidden shrink-0 ring-1 ring-[#333]">
                                         {u.image ? <img src={u.image} className="w-full h-full object-cover" /> : null}
                                     </div>
-                                    <span className="text-gray-300 text-sm font-medium truncate flex-1">
+                                    <span className="text-gray-400 group-hover:text-gray-200 text-xs font-medium truncate flex-1 transition-colors">
                                         {u.name}
                                     </span>
                                     {u.isImplicit && (
-                                        <span className="text-[10px] text-[#1ED760] font-bold bg-[#1ED760]/10 px-1.5 py-0.5 rounded-md border border-[#1ED760]/20">
-                                            DISPO
+                                        <span className="text-[9px] text-[#1ED760] font-bold opacity-70">
+                                            (DISPO)
                                         </span>
                                     )}
                                 </div>
                             ))}
                             {responses.accepted.length === 0 && (
-                                <div className="text-gray-600 italic text-xs text-center py-8">
-                                    En attente de réponses...
+                                <div className="text-gray-700 italic text-[10px] text-center py-8">
+                                    En attente...
                                 </div>
                             )}
                         </div>
                     </div>
 
                     {/* Right: REFUSALS */}
-                    <div className="bg-[#141414] rounded-2xl p-4 border border-[#222] flex flex-col h-full shadow-inner">
-                        <div className="flex items-center justify-between mb-4 pb-2 border-b border-white/5">
-                            <h3 className="text-red-500 font-bold text-xs uppercase tracking-widest flex items-center gap-2">
-                                <XCircle size={14} /> Absents
+                    <div className="bg-[#141414] rounded-3xl p-5 border border-[#1f1f1f] flex flex-col h-full shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)]">
+                        <div className="flex items-center justify-between mb-4 pb-2 border-b border-[#222]">
+                            <h3 className="text-red-500 font-bold text-[10px] uppercase tracking-[0.2em] flex items-center gap-2">
+                                <XCircle size={12} /> Absents
                             </h3>
-                            <span className="bg-red-500/10 text-red-500 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                            <span className="bg-[#2e1a1a] text-red-500 text-[9px] font-bold px-2 py-0.5 rounded-full border border-red-900/30">
                                 {responses.declined.length}
                             </span>
                         </div>
 
-                        <div className="space-y-2 overflow-y-auto pr-1 custom-scrollbar">
+                        <div className="space-y-1 overflow-y-auto pr-1 custom-scrollbar">
                             {responses.declined.map((u: any, idx) => (
-                                <div key={idx} className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-colors opacity-60">
-                                    <div className="w-4 h-4 rounded-full bg-gray-700 overflow-hidden shrink-0 grayscale">
+                                <div key={idx} className="flex items-center gap-3 p-1.5 rounded-lg hover:bg-[#1a1a1a] transition-colors opacity-50 hover:opacity-100 group">
+                                    <div className="w-3 h-3 rounded-full bg-gray-800 overflow-hidden shrink-0 grayscale ring-1 ring-[#333]">
                                         {u.image ? <img src={u.image} className="w-full h-full object-cover" /> : null}
                                     </div>
-                                    <span className="text-gray-400 text-sm font-medium line-through decoration-red-500/50 truncate">
+                                    <span className="text-gray-500 group-hover:text-gray-400 text-xs font-medium line-through decoration-red-900 truncate">
                                         {u.name}
                                     </span>
                                 </div>
                             ))}
                             {responses.declined.length === 0 && (
-                                <div className="text-gray-600 italic text-xs text-center py-8">
-                                    Aucun refus pour le moment
+                                <div className="text-gray-700 italic text-[10px] text-center py-8">
+                                    Personne
                                 </div>
                             )}
                         </div>
@@ -265,29 +265,29 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
                 </div>
 
                 {/* Footer: Actions */}
-                <div className="p-6 pt-4 bg-gradient-to-t from-[#0F0F0F] to-[#141414] border-t border-[#333] flex justify-center gap-4">
+                <div className="p-8 pt-6 bg-gradient-to-t from-[#0a0a0a] to-[#0F0F0F] border-t border-[#1f1f1f] flex justify-between gap-8 items-center">
                     <button
                         onClick={() => handleRespond("ACCEPTED")}
                         disabled={loading}
-                        className={`px-8 py-3 rounded-xl font-bold text-sm tracking-wide uppercase transition-all flex items-center gap-2 shadow-lg ${myStatus === "ACCEPTED"
-                            ? "bg-green-500/20 text-green-500 border border-green-500/50 cursor-default"
-                            : "bg-[#1ED760] text-black hover:bg-[#1fdf64] hover:scale-105 hover:shadow-green-500/20"
+                        className={`flex-1 py-4 rounded-full font-black text-xs tracking-[0.15em] uppercase transition-all flex items-center justify-center gap-3 shadow-2xl ${myStatus === "ACCEPTED"
+                            ? "bg-[#132e13] text-green-500 border border-green-900/50 cursor-default opacity-80"
+                            : "bg-[#1ED760] text-black hover:bg-[#1fdf64] hover:scale-105 hover:shadow-[0_0_30px_rgba(30,215,96,0.3)]"
                             }`}
                     >
-                        {myStatus === "ACCEPTED" ? <Check size={16} /> : null}
-                        {myStatus === "ACCEPTED" ? "Présent" : "Accepter"}
+                        {myStatus === "ACCEPTED" ? <Check size={14} strokeWidth={3} /> : null}
+                        {myStatus === "ACCEPTED" ? "PRÉSENT" : "ACCEPTER"}
                     </button>
 
                     <button
                         onClick={() => handleRespond("DECLINED")}
                         disabled={loading}
-                        className={`px-8 py-3 rounded-xl font-bold text-sm tracking-wide uppercase transition-all flex items-center gap-2 shadow-lg ${myStatus === "DECLINED"
-                            ? "bg-red-500/20 text-red-500 border border-red-500/50 cursor-default"
-                            : "bg-[#2A2A2A] text-gray-300 hover:bg-[#333] hover:text-white border border-transparent hover:border-gray-600"
+                        className={`flex-1 py-4 rounded-full font-black text-xs tracking-[0.15em] uppercase transition-all flex items-center justify-center gap-3 shadow-2xl ${myStatus === "DECLINED"
+                            ? "bg-[#2e1313] text-red-500 border border-red-900/50 cursor-default opacity-80"
+                            : "bg-[#1a1a1a] text-gray-400 hover:bg-[#222] hover:text-white border border-[#333] hover:border-gray-500"
                             }`}
                     >
-                        {myStatus === "DECLINED" ? <X size={16} /> : null}
-                        {myStatus === "DECLINED" ? "Refusé" : "Refuser"}
+                        {myStatus === "DECLINED" ? <X size={14} strokeWidth={3} /> : null}
+                        {myStatus === "DECLINED" ? "REFUSÉ" : "REFUSER"}
                     </button>
                 </div>
             </div>
