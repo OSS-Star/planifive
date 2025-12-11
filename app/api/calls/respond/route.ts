@@ -93,6 +93,31 @@ export async function POST(req: Request) {
                 console.log("🔴 [API] Call NOT found for ID:", callId);
             }
         }
+        // 3. Logic: If DECLINED, we should REMOVE availability for these slots
+        else if (status === "DECLINED") {
+            console.log("🔵 [API] Status is DECLINED, removing availability...");
+            const call = await prisma.call.findUnique({
+                where: { id: callId }
+            });
+
+            if (call) {
+                const duration = call.duration || 60;
+                const slotsCount = duration === 90 ? 5 : 4;
+                const hoursToRemove = [];
+                for (let i = 0; i < slotsCount; i++) {
+                    hoursToRemove.push(call.hour + i);
+                }
+
+                await prisma.availability.deleteMany({
+                    where: {
+                        userId: session.user.id,
+                        date: call.date,
+                        hour: { in: hoursToRemove }
+                    }
+                });
+                console.log("🟢 [API] Availability removed for slots:", hoursToRemove);
+            }
+        }
 
         return NextResponse.json({ success: true, response });
 
