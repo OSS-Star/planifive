@@ -396,11 +396,12 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
 
     // Check if this slot is part of an active call
     const callOnSlot = calls.find(c => {
-      const d1 = new Date(c.date).toDateString();
-      const d2 = new Date(dateStr).toDateString();
+      // Normalize dates to YYYY-MM-DD string for safe comparison
+      const callDateKey = formatDateLocal(new Date(c.date));
+      const myDateKey = dateStr; // already YYYY-MM-DD
       const start = c.hour;
       const end = c.hour + (c.duration === 90 ? 5 : 4);
-      return d1 === d2 && hour >= start && hour < end;
+      return callDateKey === myDateKey && hour >= start && hour < end;
     });
 
     if (callOnSlot) {

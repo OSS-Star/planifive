@@ -84,17 +84,39 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
     const handleRespond = async (status: "ACCEPTED" | "DECLINED") => {
         setLoading(true);
         try {
+            // 1. Send Response Status
             const res = await fetch("/api/calls/respond", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ callId: call.id, status })
             });
 
+            // 2. If Accepted, AUTO-FILL slots
+            if (status === "ACCEPTED" && res.ok) {
+                // Calculate the 4 slots
+                const d = new Date(call.date);
+                // Safe YYYY-MM-DD format
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                const dateStr = `${year}-${month}-${day}`;
+
+                const slotsToUpdate = [];
+                // Assume 4h duration
+                for (let h = call.hour; h < call.hour + 4; h++) {
+                    slotsToUpdate.push({ date: dateStr, hour: h });
+                }
+
+                await fetch("/api/availability", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ slots: slotsToUpdate }),
+                });
+            }
+
             if (res.ok) {
                 await fetchResponses(); // Refresh local list
                 if (onResponseUpdate) onResponseUpdate(); // Refresh parent grid
-                // Optional: Close modal on success? Or let user see the update?
-                // User requirement: "avoir la liste...". So keep valid.
             }
         } catch (e) { console.error(e); }
         setLoading(false);
