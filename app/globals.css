@@ -432,75 +432,7 @@ a {
   animation: dash 1s linear infinite;
 }
 
-.call-active-slot {
-  position: relative;
-  /* Use variable for bg, default to dark, but allow override */
-  --slot-bg: #1A1A1A;
-
-  /* We don't set background-color on the parent directly so the pseudo-elements can layer correctly */
-  background: transparent !important;
-  /* box-shadow doesn't work well on transparent parent with overflowing children masked */
-  overflow: hidden;
-  /* Needed for the pseudo-element 'tour' effect */
-  z-index: 10;
-  /* Ensure active slot is above others */
-}
-
-/* Modifier when selected: Change the inner background variable to GREEN */
-.call-active-slot.selected {
-  --slot-bg: #22c55e;
-  z-index: 20;
-  /* Even higher */
-}
-
-/* Force Green background on the mask when selected - explicit rule to be sure */
-.call-active-slot.selected::after {
-  background: #22c55e !important;
-}
-
-/* The rotating border effect (Layer 1) */
-.call-active-slot::before {
-  content: '';
-  position: absolute;
-  width: 150%;
-  height: 150%;
-  top: -25%;
-  left: -25%;
-  background: conic-gradient(transparent,
-      transparent,
-      transparent,
-      #5865F2,
-      #00C7FF,
-      /* Light Blue/Cyan highlight */
-      #5865F2);
-  animation: borderSpin 4s linear infinite;
-  z-index: 1;
-  /* Above parent transparent bg */
-  pointer-events: none;
-}
-
-/* Inner Mask/Background (Layer 2) */
-.call-active-slot::after {
-  content: '';
-  position: absolute;
-  inset: 4px;
-  /* Thicker border (4px) for better visibility */
-  background: var(--slot-bg);
-  /* Uses the variable! */
-  z-index: 2;
-  /* On top of the spinning gradient */
-  border-radius: inherit;
-}
-
-/* Hover state enhancement */
-.call-active-slot:hover {
-  /* box-shadow doesn't work well on transparent parent with overflowing children masked */
-}
-
-.call-active-slot:hover::before {
-  animation-duration: 2s;
-  /* Faster spin on hover */
-}
+/* Legacy .call-active-slot styles removed in favor of ActiveCallVisual.tsx */
 
 
 /* ===== VIBRANT FRAME DESIGN ===== */
