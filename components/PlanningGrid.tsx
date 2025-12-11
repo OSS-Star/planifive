@@ -684,8 +684,11 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
                           onMouseEnter={() => onMouseEnter(i, hour)}
                           onClick={() => toggleSlot(dateStr, hour)}
                           style={cellStyle}
-                          className={`relative group transition-all duration-200 border-b border-r border-[#222] cursor-pointer flex flex-col items-center justify-center ${bgClass} ${extraClasses} group-hover:z-50`}
+                          className={`relative group transition-all duration-200 border-b border-r border-[#222] cursor-pointer flex flex-col items-center justify-center ${extraClasses} group-hover:z-50`}
                         >
+                          {/* VISUAL LAYER (Background / Active Call Effect) - Decoupled to avoid clipping tooltip */}
+                          <div className={`absolute inset-0 z-0 ${bgClass} pointer-events-none`}></div>
+
                           {count > 0 && (
                             <div className="w-full h-full flex items-center justify-center pointer-events-none relative z-20">
                               <span className={`text-sm font-bold ${isSelected || isGold ? 'text-black' : (isFull ? 'text-red-500' : (activeCall ? 'text-[#5865F2]' : 'text-white'))}`}>
