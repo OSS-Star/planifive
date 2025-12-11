@@ -658,11 +658,9 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
                       // PRIORITY: Active Call > Selection > Golden > Full
                       if (activeCall) {
                         bgClass = "call-active-slot";
-                        // Use CSS variable logic for background
                         if (isSelected) {
-                          extraClasses += " selected";
+                          bgClass += " selected";
                         }
-                        // Note: We do NOT set cellStyle.zIndex here because the CSS class handles it (z-index: 10 or 20).
 
                       } else if (isSelected) {
                         // FORCE GREEN via inline style only if NOT active call
@@ -687,7 +685,7 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
                           className={`relative group transition-all duration-200 border-b border-r border-[#222] cursor-pointer flex flex-col items-center justify-center ${extraClasses} group-hover:z-50`}
                         >
                           {/* VISUAL LAYER (Background / Active Call Effect) - Decoupled to avoid clipping tooltip */}
-                          <div className={`absolute inset-0 z-0 ${bgClass} pointer-events-none`}></div>
+                          <div className={`absolute inset-0 ${bgClass} pointer-events-none`}></div>
 
                           {count > 0 && (
                             <div className="w-full h-full flex items-center justify-center pointer-events-none relative z-20">
