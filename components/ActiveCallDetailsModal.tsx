@@ -92,7 +92,6 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
     if (!call) return null;
 
     return (
-    return (
         isOpen ? (
             <div
                 className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
