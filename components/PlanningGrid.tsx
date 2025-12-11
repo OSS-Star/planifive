@@ -395,20 +395,22 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
     const isSelected = mySlots.includes(key);
 
     // Check if this slot is part of an active call created by the current user
-    const callOnSlot = calls.find(c =>
-      new Date(c.date).toDateString() === new Date(dateStr).toDateString() &&
-      c.hour <= hour &&
-      hour < c.hour + (c.duration === 90 ? 5 : 4) // Logic for 4h blocks? Wait, match logic might be different from simple display. 
-      // Actually, if we want to be precise about "clicking the call":
-      // If the visual component is rendered here, we should be able to click it.
-      // Current logic: c.hour <= hour ...
-      // If it IS a call slot, open the details modal.
-    );
+    const callOnSlot = calls.find(c => {
+      const d1 = new Date(c.date).toDateString();
+      const d2 = new Date(dateStr).toDateString();
+      const start = c.hour;
+      const end = c.hour + (c.duration === 90 ? 5 : 4);
+      return d1 === d2 && hour >= start && hour < end;
+    });
+
+    console.log("DEBUG CLICK CALL:", {
+      clicked: { date: dateStr, hour },
+      foundCall: callOnSlot ? callOnSlot.id : "NONE",
+      callsTotal: calls.length
+    });
 
     if (callOnSlot) {
-      // Open Details Modal for EVERYONE (Creator or User)
-      // Creator can see details/delete there.
-      // User can Accept/Refuse.
+      console.log("OPENING MODAL FOR", callOnSlot.id);
       setSelectedActiveCall(callOnSlot);
       setDetailsModalOpen(true);
       return;
