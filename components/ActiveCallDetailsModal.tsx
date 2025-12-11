@@ -161,7 +161,7 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
                         <div className="flex items-center gap-4 text-gray-400 text-xs uppercase tracking-wider font-medium">
                             <div className="flex items-center gap-1.5">
                                 <Clock size={14} />
-                                <span>{call.hour}H - {call.hour + (call.duration === 90 ? 1 : 1)}H{call.duration === 90 ? "30" : "00"}</span>
+                                <span>{call.hour}H - {call.hour + (call.duration === 90 ? 5 : 4)}H00</span>
                             </div>
                             <div className="flex items-center gap-1.5">
                                 <UserIcon size={14} />
@@ -199,7 +199,7 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
                 <div className="flex-1 overflow-y-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
 
                     {/* Left: ACCEPTS */}
-                    <div className="bg-[#141414] rounded-2xl p-4 border border-green-900/20 flex flex-col h-full shadow-inner">
+                    <div className="bg-[#141414] rounded-2xl p-4 border border-[#222] flex flex-col h-full shadow-inner">
                         <div className="flex items-center justify-between mb-4 pb-2 border-b border-white/5">
                             <h3 className="text-green-500 font-bold text-xs uppercase tracking-widest flex items-center gap-2">
                                 <Check size={14} /> Présents
@@ -212,14 +212,14 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
                         <div className="space-y-2 overflow-y-auto pr-1 custom-scrollbar">
                             {responses.accepted.map((u: any, idx) => (
                                 <div key={idx} className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-colors">
-                                    <div className="w-6 h-6 rounded-full bg-gray-700 overflow-hidden ring-1 ring-white/10 shrink-0">
+                                    <div className="w-5 h-5 rounded-full bg-gray-700 overflow-hidden shrink-0">
                                         {u.image ? <img src={u.image} className="w-full h-full object-cover" /> : null}
                                     </div>
                                     <span className="text-gray-300 text-sm font-medium truncate flex-1">
                                         {u.name}
                                     </span>
                                     {u.isImplicit && (
-                                        <span className="text-[10px] text-[#1ED760] font-bold bg-[#1ED760]/10 px-1.5 py-0.5 rounded border border-[#1ED760]/20">
+                                        <span className="text-[10px] text-[#1ED760] font-bold bg-[#1ED760]/10 px-1.5 py-0.5 rounded-md border border-[#1ED760]/20">
                                             DISPO
                                         </span>
                                     )}
@@ -234,7 +234,7 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
                     </div>
 
                     {/* Right: REFUSALS */}
-                    <div className="bg-[#141414] rounded-2xl p-4 border border-red-900/20 flex flex-col h-full shadow-inner">
+                    <div className="bg-[#141414] rounded-2xl p-4 border border-[#222] flex flex-col h-full shadow-inner">
                         <div className="flex items-center justify-between mb-4 pb-2 border-b border-white/5">
                             <h3 className="text-red-500 font-bold text-xs uppercase tracking-widest flex items-center gap-2">
                                 <XCircle size={14} /> Absents
@@ -247,7 +247,7 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
                         <div className="space-y-2 overflow-y-auto pr-1 custom-scrollbar">
                             {responses.declined.map((u: any, idx) => (
                                 <div key={idx} className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-colors opacity-60">
-                                    <div className="w-6 h-6 rounded-full bg-gray-700 overflow-hidden shrink-0 grayscale">
+                                    <div className="w-5 h-5 rounded-full bg-gray-700 overflow-hidden shrink-0 grayscale">
                                         {u.image ? <img src={u.image} className="w-full h-full object-cover" /> : null}
                                     </div>
                                     <span className="text-gray-400 text-sm font-medium line-through decoration-red-500/50 truncate">
