@@ -421,439 +421,432 @@ a {
 }
 
 /* ===== CALL ACTIVE SLOT ANIMATION (BLUE GLOW) ===== */
-@keyframes spinSlow {
-  from {
-    transform: rotate(0deg);
-  }
-
+/* ===== SVG DASH ANIMATION ===== */
+@keyframes dash {
   to {
+    stroke-dashoffset: -50;
+  }
+}
 
-    /* ===== SVG DASH ANIMATION ===== */
-    @keyframes dash {
-      to {
-        stroke-dashoffset: -50;
-      }
-    }
+.animate-dash {
+  animation: dash 1s linear infinite;
+}
 
-    .animate-dash {
-      animation: dash 1s linear infinite;
-    }
+.call-active-slot {
+  position: relative;
+  /* Use variable for bg, default to dark, but allow override */
+  --slot-bg: #1A1A1A;
 
-    .call-active-slot {
-      position: relative;
-      /* Use variable for bg, default to dark, but allow override */
-      --slot-bg: #1A1A1A;
+  /* We don't set background-color on the parent directly so the pseudo-elements can layer correctly */
+  background: transparent !important;
+  /* box-shadow doesn't work well on transparent parent with overflowing children masked */
+  overflow: hidden;
+  /* Needed for the pseudo-element 'tour' effect */
+  z-index: 10;
+  /* Ensure active slot is above others */
+}
 
-      /* We don't set background-color on the parent directly so the pseudo-elements can layer correctly */
-      background: transparent !important;
-      /* box-shadow doesn't work well on transparent parent with overflowing children masked */
-      overflow: hidden;
-      /* Needed for the pseudo-element 'tour' effect */
-      z-index: 10;
-      /* Ensure active slot is above others */
-    }
+/* Modifier when selected: Change the inner background variable to GREEN */
+.call-active-slot.selected {
+  --slot-bg: #22c55e;
+  z-index: 20;
+  /* Even higher */
+}
 
-    /* Modifier when selected: Change the inner background variable to GREEN */
-    .call-active-slot.selected {
-      --slot-bg: #22c55e;
-      z-index: 20;
-      /* Even higher */
-    }
+/* Force Green background on the mask when selected - explicit rule to be sure */
+.call-active-slot.selected::after {
+  background: #22c55e !important;
+}
 
-    /* Force Green background on the mask when selected - explicit rule to be sure */
-    .call-active-slot.selected::after {
-      background: #22c55e !important;
-    }
+/* The rotating border effect (Layer 1) */
+.call-active-slot::before {
+  content: '';
+  position: absolute;
+  width: 150%;
+  height: 150%;
+  top: -25%;
+  left: -25%;
+  background: conic-gradient(transparent,
+      transparent,
+      transparent,
+      #5865F2,
+      #00C7FF,
+      /* Light Blue/Cyan highlight */
+      #5865F2);
+  animation: borderSpin 4s linear infinite;
+  z-index: 1;
+  /* Above parent transparent bg */
+  pointer-events: none;
+}
 
-    /* The rotating border effect (Layer 1) */
-    .call-active-slot::before {
-      content: '';
-      position: absolute;
-      width: 150%;
-      height: 150%;
-      top: -25%;
-      left: -25%;
-      background: conic-gradient(transparent,
-          transparent,
-          transparent,
-          #5865F2,
-          #00C7FF,
-          /* Light Blue/Cyan highlight */
-          #5865F2);
-      animation: borderSpin 4s linear infinite;
-      z-index: 1;
-      /* Above parent transparent bg */
-      pointer-events: none;
-    }
+/* Inner Mask/Background (Layer 2) */
+.call-active-slot::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  /* Thicker border (4px) for better visibility */
+  background: var(--slot-bg);
+  /* Uses the variable! */
+  z-index: 2;
+  /* On top of the spinning gradient */
+  border-radius: inherit;
+}
 
-    /* Inner Mask/Background (Layer 2) */
-    .call-active-slot::after {
-      content: '';
-      position: absolute;
-      inset: 4px;
-      /* Thicker border (4px) for better visibility */
-      background: var(--slot-bg);
-      /* Uses the variable! */
-      z-index: 2;
-      /* On top of the spinning gradient */
-      border-radius: inherit;
-    }
+/* Hover state enhancement */
+.call-active-slot:hover {
+  /* box-shadow doesn't work well on transparent parent with overflowing children masked */
+}
 
-    /* Hover state enhancement */
-    .call-active-slot:hover {
-      /* box-shadow doesn't work well on transparent parent with overflowing children masked */
-    }
-
-    .call-active-slot:hover::before {
-      animation-duration: 2s;
-      /* Faster spin on hover */
-    }
+.call-active-slot:hover::before {
+  animation-duration: 2s;
+  /* Faster spin on hover */
+}
 
 
-    /* ===== VIBRANT FRAME DESIGN ===== */
-    .vf-main-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      /* height: 100%; REMOVED to prevent grid stretching */
-      width: 100%;
-      max-width: 380px;
-      /* Force vertical rectangle shape */
-      margin: 0 auto;
-      /* Center in grid cell */
-    }
+/* ===== VIBRANT FRAME DESIGN ===== */
+.vf-main-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* height: 100%; REMOVED to prevent grid stretching */
+  width: 100%;
+  max-width: 380px;
+  /* Force vertical rectangle shape */
+  margin: 0 auto;
+  /* Center in grid cell */
+}
 
-    .vf-svg-container {
-      position: absolute;
-      width: 0;
-      height: 0;
-    }
+.vf-svg-container {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
 
-    .vf-card-container {
-      padding: 2px;
-      border-radius: 24px;
-      position: relative;
-      /* Replaced oklch with hex/rgba for compatibility */
-      background: linear-gradient(-30deg,
-          #6348dd,
-          transparent,
-          #6348dd),
-        linear-gradient(to bottom, #1a1a1a, #1a1a1a);
-      overflow: hidden;
-      width: 100%;
-      height: 100%;
-      min-height: 500px;
-      /* Ensure vertical height */
-    }
+.vf-card-container {
+  padding: 2px;
+  border-radius: 24px;
+  position: relative;
+  /* Replaced oklch with hex/rgba for compatibility */
+  background: linear-gradient(-30deg,
+      #6348dd,
+      transparent,
+      #6348dd),
+    linear-gradient(to bottom, #1a1a1a, #1a1a1a);
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  min-height: 500px;
+  /* Ensure vertical height */
+}
 
-    .vf-inner-container {
-      position: relative;
-      width: 100%;
-      height: 100%;
-    }
+.vf-inner-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
 
-    .vf-border-outer {
-      border: 2px solid rgba(72, 87, 221, 0.5);
-      border-radius: 24px;
-      padding-right: 4px;
-      padding-bottom: 4px;
-      width: 100%;
-      height: 100%;
-    }
+.vf-border-outer {
+  border: 2px solid rgba(72, 87, 221, 0.5);
+  border-radius: 24px;
+  padding-right: 4px;
+  padding-bottom: 4px;
+  width: 100%;
+  height: 100%;
+}
 
-    .vf-main-card {
-      width: 100%;
-      height: 100%;
-      border-radius: 24px;
-      border: 2px solid #6348dd;
-      margin-top: -4px;
-      margin-left: -4px;
-      filter: url(#turbulent-displace);
-      background: rgba(0, 0, 0, 0.5);
-    }
+.vf-main-card {
+  width: 100%;
+  height: 100%;
+  border-radius: 24px;
+  border: 2px solid #6348dd;
+  margin-top: -4px;
+  margin-left: -4px;
+  filter: url(#turbulent-displace);
+  background: rgba(0, 0, 0, 0.5);
+}
 
-    .vf-glow-layer-1 {
-      border: 2px solid rgba(221, 132, 72, 0.6);
-      border-radius: 24px;
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      top: 0;
-      left: 0;
-      filter: blur(1px);
-    }
+.vf-glow-layer-1 {
+  border: 2px solid rgba(221, 132, 72, 0.6);
+  border-radius: 24px;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  filter: blur(1px);
+}
 
-    .vf-glow-layer-2 {
-      border: 2px solid #8a70f0;
+.vf-glow-layer-2 {
+  border: 2px solid #8a70f0;
+  /* Replaced oklch */
+  border-radius: 24px;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  filter: blur(4px);
+}
+
+.vf-overlay-1,
+.vf-overlay-2 {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  border-radius: 24px;
+  mix-blend-mode: overlay;
+  transform: scale(1.1);
+  filter: blur(16px);
+  background: linear-gradient(-30deg,
+      white,
+      transparent 30%,
+      transparent 70%,
+      white);
+  pointer-events: none;
+}
+
+.vf-overlay-1 {
+  opacity: 1;
+}
+
+.vf-overlay-2 {
+  opacity: 0.5;
+}
+
+.vf-background-glow {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  border-radius: 24px;
+  filter: blur(32px);
+  transform: scale(1.1);
+  opacity: 0.3;
+  z-index: -1;
+  background: linear-gradient(-30deg,
+      #8a70f0,
       /* Replaced oklch */
-      border-radius: 24px;
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      top: 0;
-      left: 0;
-      filter: blur(4px);
-    }
+      transparent,
+      #6348dd);
+}
 
-    .vf-overlay-1,
-    .vf-overlay-2 {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
-      border-radius: 24px;
-      mix-blend-mode: overlay;
-      transform: scale(1.1);
-      filter: blur(16px);
-      background: linear-gradient(-30deg,
-          white,
-          transparent 30%,
-          transparent 70%,
-          white);
-      pointer-events: none;
-    }
+.vf-content-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+}
 
-    .vf-overlay-1 {
-      opacity: 1;
-    }
+.vf-content-top {
+  display: flex;
+  flex-direction: column;
+  padding: 32px;
+  padding-bottom: 16px;
+  height: 100%;
+  align-items: center;
+}
 
-    .vf-overlay-2 {
-      opacity: 0.5;
-    }
+.vf-content-bottom {
+  display: flex;
+  flex-direction: column;
+  padding: 32px;
+  padding-top: 16px;
+}
 
-    .vf-background-glow {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
-      border-radius: 24px;
-      filter: blur(32px);
-      transform: scale(1.1);
-      opacity: 0.3;
-      z-index: -1;
-      background: linear-gradient(-30deg,
-          #8a70f0,
-          /* Replaced oklch */
-          transparent,
-          #6348dd);
-    }
+.vf-scrollbar-glass {
+  background: radial-gradient(47.2% 50% at 50.39% 88.37%,
+      rgba(255, 255, 255, 0.12) 0%,
+      rgba(255, 255, 255, 0) 100%),
+    rgba(255, 255, 255, 0.04);
+  position: relative;
+  transition: background 0.3s ease;
+  border-radius: 14px;
+  width: fit-content;
+  height: fit-content;
+  padding: 8px 16px;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 16px;
+}
 
-    .vf-content-container {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      z-index: 10;
-    }
+.vf-scrollbar-glass:hover {
+  background: radial-gradient(47.2% 50% at 50.39% 88.37%,
+      rgba(255, 255, 255, 0.12) 0%,
+      rgba(255, 255, 255, 0) 100%),
+    rgba(255, 255, 255, 0.08);
+}
 
-    .vf-content-top {
-      display: flex;
-      flex-direction: column;
-      padding: 32px;
-      padding-bottom: 16px;
-      height: 100%;
-      align-items: center;
-    }
+.vf-scrollbar-glass::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 1px;
+  background: linear-gradient(150deg,
+      rgba(255, 255, 255, 0.48) 16.73%,
+      rgba(255, 255, 255, 0.08) 30.2%,
+      rgba(255, 255, 255, 0.08) 68.2%,
+      rgba(255, 255, 255, 0.6) 81.89%);
+  border-radius: inherit;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: xor;
+  -webkit-mask-composite: xor;
+  pointer-events: none;
+}
 
-    .vf-content-bottom {
-      display: flex;
-      flex-direction: column;
-      padding: 32px;
-      padding-top: 16px;
-    }
+.vf-title {
+  font-size: 48px;
+  font-weight: 700;
+  margin-top: auto;
+  margin-bottom: auto;
+  color: #fff;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
 
-    .vf-scrollbar-glass {
-      background: radial-gradient(47.2% 50% at 50.39% 88.37%,
-          rgba(255, 255, 255, 0.12) 0%,
-          rgba(255, 255, 255, 0) 100%),
-        rgba(255, 255, 255, 0.04);
-      position: relative;
-      transition: background 0.3s ease;
-      border-radius: 14px;
-      width: fit-content;
-      height: fit-content;
-      padding: 8px 16px;
-      text-transform: uppercase;
-      font-weight: bold;
-      font-size: 14px;
-      color: rgba(255, 255, 255, 0.8);
-      margin-bottom: 16px;
-    }
+.vf-description {
+  opacity: 0.8;
+  color: #fff;
+  font-size: 14px;
+}
 
-    .vf-scrollbar-glass:hover {
-      background: radial-gradient(47.2% 50% at 50.39% 88.37%,
-          rgba(255, 255, 255, 0.12) 0%,
-          rgba(255, 255, 255, 0) 100%),
-        rgba(255, 255, 255, 0.08);
-    }
+.vf-divider {
+  margin-top: auto;
+  border: none;
+  height: 1px;
+  background-color: currentColor;
+  opacity: 0.2;
+  width: 100%;
+  mask-image: linear-gradient(to right, transparent, black, transparent);
+  -webkit-mask-image: linear-gradient(to right,
+      transparent,
+      black,
+      transparent);
+}
 
-    .vf-scrollbar-glass::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      padding: 1px;
-      background: linear-gradient(150deg,
-          rgba(255, 255, 255, 0.48) 16.73%,
-          rgba(255, 255, 255, 0.08) 30.2%,
-          rgba(255, 255, 255, 0.08) 68.2%,
-          rgba(255, 255, 255, 0.6) 81.89%);
-      border-radius: inherit;
-      mask:
-        linear-gradient(#fff 0 0) content-box,
-        linear-gradient(#fff 0 0);
-      mask-composite: xor;
-      -webkit-mask-composite: xor;
-      pointer-events: none;
-    }
+.luminous-card .content {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
 
-    .vf-title {
-      font-size: 48px;
-      font-weight: 700;
-      margin-top: auto;
-      margin-bottom: auto;
-      color: #fff;
-      text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
-    }
+/* Animation hover pour le logo de la navbar */
+/* Animation hover pour le logo de la navbar */
+.nav-logo-hover {
+  transition: all 0.3s ease;
+  padding: 6px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+}
 
-    .vf-description {
-      opacity: 0.8;
-      color: #fff;
-      font-size: 14px;
-    }
+.nav-logo-hover:hover {
+  background-color: #22C55E !important;
+  color: white !important;
+}
 
-    .vf-divider {
-      margin-top: auto;
-      border: none;
-      height: 1px;
-      background-color: currentColor;
-      opacity: 0.2;
-      width: 100%;
-      mask-image: linear-gradient(to right, transparent, black, transparent);
-      -webkit-mask-image: linear-gradient(to right,
-          transparent,
-          black,
-          transparent);
-    }
+.nav-logo-hover:hover span {
+  color: white !important;
+}
 
-    .luminous-card .content {
-      position: relative;
-      z-index: 10;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
+/* Custom Menu CSS from User */
+#custom-menu {
+  position: relative;
+  z-index: 500;
+  height: 50px;
+  border-radius: 25px;
+  overflow: hidden;
+  background: #404040;
+  /* Default Grey */
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, .5);
+  transition: all .5s ease;
+  float: left;
+}
 
-    /* Animation hover pour le logo de la navbar */
-    /* Animation hover pour le logo de la navbar */
-    .nav-logo-hover {
-      transition: all 0.3s ease;
-      padding: 6px 12px;
-      border-radius: 8px;
-      text-decoration: none;
-    }
+/* Hover effect: Green (only when NOT open) */
+#custom-menu:not(:has(input:checked)):hover {
+  background: #73c71a;
+}
 
-    .nav-logo-hover:hover {
-      background-color: #22C55E !important;
-      color: white !important;
-    }
+/* Open state: Force Grey */
+#custom-menu:has(input:checked) {
+  background: #404040 !important;
+}
 
-    .nav-logo-hover:hover span {
-      color: white !important;
-    }
+#custom-menu>* {
+  float: left;
+}
 
-    /* Custom Menu CSS from User */
-    #custom-menu {
-      position: relative;
-      z-index: 500;
-      height: 50px;
-      border-radius: 25px;
-      overflow: hidden;
-      background: #404040;
-      /* Default Grey */
-      box-shadow: 0px 0px 10px rgba(0, 0, 0, .5);
-      transition: all .5s ease;
-      float: left;
-    }
+#menu-toggle {
+  display: block;
+  cursor: pointer;
+  opacity: 0;
+  z-index: 999;
+  margin: 0;
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
 
-    /* Hover effect: Green (only when NOT open) */
-    #custom-menu:not(:has(input:checked)):hover {
-      background: #73c71a;
-    }
+#menu-toggle:checked~ul {
+  width: 150px;
+  background-position: 0px -50px;
+}
 
-    /* Open state: Force Grey */
-    #custom-menu:has(input:checked) {
-      background: #404040 !important;
-    }
+#menu-toggle:checked~ul.admin-mode {
+  width: 200px;
+}
 
-    #custom-menu>* {
-      float: left;
-    }
+#custom-menu ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0 0 0 50px;
+  height: 50px;
+  width: 0px;
+  transition: .5s width ease;
+  background-image: url("https://i.imgur.com/3d0vJzn.png");
+  background-repeat: no-repeat;
+  background-position: 0px 0px;
+  display: flex;
+  align-items: center;
+  box-sizing: content-box;
+  /* Fix for Tailwind border-box reset */
+}
 
-    #menu-toggle {
-      display: block;
-      cursor: pointer;
-      opacity: 0;
-      z-index: 999;
-      margin: 0;
-      width: 50px;
-      height: 50px;
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
+#custom-menu li {
+  display: inline-block;
+  line-height: 50px;
+  width: 50px;
+  text-align: center;
+  margin: 0;
+}
 
-    #menu-toggle:checked~ul {
-      width: 150px;
-      background-position: 0px -50px;
-    }
-
-    #menu-toggle:checked~ul.admin-mode {
-      width: 200px;
-    }
-
-    #custom-menu ul {
-      list-style-type: none;
-      margin: 0;
-      padding: 0 0 0 50px;
-      height: 50px;
-      width: 0px;
-      transition: .5s width ease;
-      background-image: url("https://i.imgur.com/3d0vJzn.png");
-      background-repeat: no-repeat;
-      background-position: 0px 0px;
-      display: flex;
-      align-items: center;
-      box-sizing: content-box;
-      /* Fix for Tailwind border-box reset */
-    }
-
-    #custom-menu li {
-      display: inline-block;
-      line-height: 50px;
-      width: 50px;
-      text-align: center;
-      margin: 0;
-    }
-
-    #custom-menu li a {
-      font-size: 1.25em;
-      font-weight: bold;
-      color: white;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      height: 100%;
-    }
+#custom-menu li a {
+  font-size: 1.25em;
+  font-weight: bold;
+  color: white;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
