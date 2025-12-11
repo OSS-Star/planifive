@@ -235,10 +235,7 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
                         {myStatus === "DECLINED" ? "Refusé" : "Refuser"}
                     </button>
                 </div>
-            </motion.div>
-        </motion.div>
+            </div>
+        </div>
     )
-}
-        </AnimatePresence >
-    );
 }
