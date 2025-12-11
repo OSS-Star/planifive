@@ -197,8 +197,8 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
 
                         <div className="space-y-1 overflow-y-auto pr-1 custom-scrollbar">
                             {responses.accepted.map((u: any, idx) => (
-                                <div key={idx} className="flex items-center gap-4 p-1.5 rounded-lg hover:bg-[#1a1a1a] transition-colors group">
-                                    <div style={{ width: '24px', height: '24px', minWidth: '24px' }} className="rounded-full bg-gray-800 overflow-hidden shrink-0 ring-1 ring-[#333]">
+                                <div key={idx} className="flex items-center gap-5 p-1.5 rounded-lg hover:bg-[#1a1a1a] transition-colors group">
+                                    <div style={{ width: '48px', height: '48px', minWidth: '48px' }} className="rounded-full bg-gray-800 overflow-hidden shrink-0 ring-1 ring-[#333]">
                                         {u.image ? <img src={u.image} className="w-full h-full object-cover" /> : null}
                                     </div>
                                     <span className="text-gray-400 group-hover:text-gray-200 text-xs font-medium truncate flex-1 transition-colors">
@@ -229,8 +229,8 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
 
                         <div className="space-y-1 overflow-y-auto pr-1 custom-scrollbar">
                             {responses.declined.map((u: any, idx) => (
-                                <div key={idx} className="flex items-center gap-4 p-1.5 rounded-lg hover:bg-[#1a1a1a] transition-colors opacity-50 hover:opacity-100 group">
-                                    <div style={{ width: '24px', height: '24px', minWidth: '24px' }} className="rounded-full bg-gray-800 overflow-hidden shrink-0 grayscale ring-1 ring-[#333]">
+                                <div key={idx} className="flex items-center gap-5 p-1.5 rounded-lg hover:bg-[#1a1a1a] transition-colors opacity-50 hover:opacity-100 group">
+                                    <div style={{ width: '48px', height: '48px', minWidth: '48px' }} className="rounded-full bg-gray-800 overflow-hidden shrink-0 grayscale ring-1 ring-[#333]">
                                         {u.image ? <img src={u.image} className="w-full h-full object-cover" /> : null}
                                     </div>
                                     <span className="text-gray-500 group-hover:text-gray-400 text-xs font-medium line-through decoration-red-900 truncate">
@@ -248,11 +248,11 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
                 </div>
 
                 {/* Footer: Actions */}
-                <div className="px-8 py-10 bg-gradient-to-t from-[#0a0a0a] to-[#0F0F0F] border-t border-[#1f1f1f] flex justify-center gap-4 items-center">
+                <div className="px-8 py-14 bg-gradient-to-t from-[#0a0a0a] to-[#0F0F0F] border-t border-[#1f1f1f] flex justify-center gap-4 items-center">
                     <button
                         onClick={() => handleRespond("ACCEPTED")}
                         disabled={loading}
-                        className={`h-16 w-52 rounded-full font-black text-sm tracking-[0.15em] uppercase transition-all flex items-center justify-center gap-3 shadow-2xl ${myStatus === "ACCEPTED"
+                        className={`h-20 w-64 rounded-full font-black text-sm tracking-[0.15em] uppercase transition-all flex items-center justify-center gap-3 shadow-2xl ${myStatus === "ACCEPTED"
                             ? "bg-[#132e13] text-green-500 border border-green-900/50 cursor-default opacity-80"
                             : "bg-[#1ED760] text-black hover:bg-[#1fdf64] hover:scale-105 hover:shadow-[0_0_30px_rgba(30,215,96,0.3)]"
                             }`}
@@ -264,7 +264,7 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
                     <button
                         onClick={() => handleRespond("DECLINED")}
                         disabled={loading}
-                        className={`h-16 w-52 rounded-full font-black text-sm tracking-[0.15em] uppercase transition-all flex items-center justify-center gap-3 shadow-2xl ${myStatus === "DECLINED"
+                        className={`h-20 w-64 rounded-full font-black text-sm tracking-[0.15em] uppercase transition-all flex items-center justify-center gap-3 shadow-2xl ${myStatus === "DECLINED"
                             ? "bg-[#2e1313] text-red-500 border border-red-900/50 cursor-default opacity-80"
                             : "bg-[#E50914] text-white hover:bg-[#b20710] border border-transparent shadow-[0_0_20px_rgba(229,9,20,0.4)]"
                             }`}
