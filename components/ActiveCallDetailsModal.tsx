@@ -307,7 +307,7 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
                 isOpen={showDeleteConfirm}
                 onClose={() => setShowDeleteConfirm(false)}
                 onConfirm={confirmDelete}
-                title="Supprimer le modèle ?"
+                title="Supprimer l'appel ?"
                 message="Voulez-vous vraiment annuler cet appel ? Cela le supprimera pour tous les participants."
                 type="danger"
                 zIndex={10000000}

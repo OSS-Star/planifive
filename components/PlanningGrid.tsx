@@ -408,18 +408,9 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
 
     if (callOnSlot) {
       console.log("🟠 [GRID] Call Creator:", callOnSlot.creatorId, "My ID:", session?.user?.id);
-      // Logic requested: If creator clicks, propose deletion (using existing pop-up)
-      if (session?.user?.id === callOnSlot.creatorId) {
-        console.log("🟠 [GRID] Opening Delete Modal");
-        setCallToDelete(callOnSlot.id);
-        setPendingAction("deleteCall");
-        setModalOpen(true);
-      } else {
-        // Otherwise open details/RSVP
-        console.log("🟠 [GRID] Opening Details Modal for Call:", callOnSlot.id);
-        setSelectedActiveCall(callOnSlot);
-        setDetailsModalOpen(true);
-      }
+      console.log("🟠 [GRID] Opening Details Modal for Call:", callOnSlot.id);
+      setSelectedActiveCall(callOnSlot);
+      setDetailsModalOpen(true);
       return;
     }
 
