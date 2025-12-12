@@ -190,8 +190,8 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
                     {/* Left: ACCEPTS */}
                     <div className="bg-[#141414] rounded-3xl p-5 border border-[#1f1f1f] flex flex-col h-full shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)]">
                         <div className="mb-4 pb-2 border-b border-[#222]">
-                            <h3 className="text-green-500 font-bold text-[10px] uppercase tracking-[0.2em] flex items-center gap-2">
-                                <Check size={12} /> Présents ({responses.accepted.length})
+                            <h3 className="text-green-500 font-bold text-xs uppercase tracking-[0.2em] flex items-center gap-2">
+                                <Check size={14} /> Présents ({responses.accepted.length})
                             </h3>
                         </div>
 
@@ -222,8 +222,8 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
                     {/* Right: REFUSALS */}
                     <div className="bg-[#141414] rounded-3xl p-5 border border-[#1f1f1f] flex flex-col h-full shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)]">
                         <div className="mb-4 pb-2 border-b border-[#222]">
-                            <h3 className="text-red-500 font-bold text-[10px] uppercase tracking-[0.2em] flex items-center gap-2">
-                                <XCircle size={12} /> Absents ({responses.declined.length})
+                            <h3 className="text-red-500 font-bold text-xs uppercase tracking-[0.2em] flex items-center gap-2">
+                                <XCircle size={14} /> Absents ({responses.declined.length})
                             </h3>
                         </div>
 
@@ -252,13 +252,13 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
                     <button
                         onClick={() => handleRespond("ACCEPTED")}
                         disabled={loading}
-                        style={{ width: '140px', height: '48px' }}
+                        style={{ width: '120px', height: '42px' }}
                         className={`shrink-0 rounded-full font-black text-xs tracking-[0.1em] uppercase transition-all flex items-center justify-center gap-2 shadow-2xl ${myStatus === "ACCEPTED"
                             ? "bg-[#132e13] text-green-500 border border-green-900/50 cursor-default"
                             : "bg-[#1ED760] text-black hover:bg-[#1fdf64] hover:scale-105 hover:shadow-[0_0_30px_rgba(30,215,96,0.3)]"
                             }`}
                     >
-                        {myStatus === "ACCEPTED" ? <Check size={16} strokeWidth={3} /> : null}
+                        {myStatus === "ACCEPTED" ? <Check size={14} strokeWidth={3} /> : null}
                         {myStatus === "ACCEPTED" ? "PRÉSENT" : "ACCEPTER"}
                     </button>
 
@@ -268,13 +268,13 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
                     <button
                         onClick={() => handleRespond("DECLINED")}
                         disabled={loading}
-                        style={{ width: '140px', height: '48px' }}
+                        style={{ width: '120px', height: '42px' }}
                         className={`shrink-0 rounded-full font-black text-xs tracking-[0.1em] uppercase transition-all flex items-center justify-center gap-2 shadow-2xl ${myStatus === "DECLINED"
                             ? "bg-red-600 text-white border border-red-800 cursor-default shadow-[0_0_20px_rgba(220,38,38,0.5)]"
                             : "bg-red-600 text-white hover:bg-red-700 border border-transparent shadow-[0_0_20px_rgba(220,38,38,0.4)]"
                             }`}
                     >
-                        {myStatus === "DECLINED" ? <X size={16} strokeWidth={3} /> : null}
+                        {myStatus === "DECLINED" ? <X size={14} strokeWidth={3} /> : null}
                         {myStatus === "DECLINED" ? "REFUSÉ" : "REFUSER"}
                     </button>
                 </div>
