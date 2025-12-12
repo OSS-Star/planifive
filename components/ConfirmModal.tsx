@@ -10,6 +10,7 @@ interface ConfirmModalProps {
     title: string;
     message: string;
     type: "save" | "apply" | "danger";
+    zIndex?: number;
 }
 
 export default function ConfirmModal({
@@ -19,6 +20,7 @@ export default function ConfirmModal({
     title,
     message,
     type,
+    zIndex = 999999,
 }: ConfirmModalProps) {
     const handleConfirm = () => {
         onConfirm();
@@ -37,7 +39,7 @@ export default function ConfirmModal({
                 right: 0,
                 bottom: 0,
                 backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                zIndex: 999999,
+                zIndex: zIndex,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -122,10 +124,10 @@ export default function ConfirmModal({
                     <button
                         onClick={handleConfirm}
                         className={`btn-md uppercase tracking-wider font-bold ${type === "save"
-                                ? 'btn-primary'
-                                : type === "danger"
-                                    ? 'bg-red-600 hover:bg-red-700 text-white'
-                                    : 'btn-accent'
+                            ? 'btn-primary'
+                            : type === "danger"
+                                ? 'bg-red-600 hover:bg-red-700 text-white'
+                                : 'btn-accent'
                             }`}
                     >
                         Confirmer
