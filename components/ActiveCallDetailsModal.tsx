@@ -69,7 +69,18 @@ export default function ActiveCallDetailsModal({ isOpen, onClose, call, onRespon
         }
     };
 
-    const isCreator = session?.user?.id === call?.creatorId;
+    const isCreator = session?.user?.id && call?.creatorId ? String(session.user.id) === String(call.creatorId) : false;
+
+    // Debug Creator Logic
+    useEffect(() => {
+        if (isOpen) {
+            console.log("🛠 [DEBUG] isCreator Check:", {
+                me: session?.user?.id,
+                creator: call?.creatorId,
+                isCreator
+            });
+        }
+    }, [isOpen, session, call]);
 
     const handleDelete = async () => {
         if (!confirm("Voulez-vous vraiment ANNULER cet appel ? Cela le supprimera pour tout le monde.")) return;
