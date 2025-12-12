@@ -559,14 +559,14 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
         {/* HEADER GRILLE */}
         <div className="flex items-center justify-between px-6 bg-[#181818] border-b border-[#282828] shrink-0 h-16 relative">
           <div className="flex items-center gap-4">
-            <button onClick={() => changeWeek(-1)} className="p-2 hover:bg-gray-700/50 rounded-full text-gray-400 hover:text-white transition-all duration-300 hover:scale-110 active:scale-95"><ChevronLeft size={18} /></button>
+            <button onClick={() => changeWeek(-1)} className="p-2 hover:bg-gray-700/50 rounded-full text-gray-400 hover:text-white transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer"><ChevronLeft size={18} /></button>
             <div className="flex items-center gap-2 px-2">
               <Calendar size={14} className="text-[#1ED760]" />
               <span className="text-sm font-bold text-white uppercase tracking-wider min-w-[140px] text-center">
                 {currentMonday.toLocaleDateString("fr-FR", { month: "long", day: "numeric" })}
               </span>
             </div>
-            <button onClick={() => changeWeek(1)} className="p-2 hover:bg-gray-700/50 rounded-full text-gray-400 hover:text-white transition-all duration-300 hover:scale-110 active:scale-95"><ChevronRight size={18} /></button>
+            <button onClick={() => changeWeek(1)} className="p-2 hover:bg-gray-700/50 rounded-full text-gray-400 hover:text-white transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer"><ChevronRight size={18} /></button>
           </div>
 
           {/* CENTERED SAVE BUTTON */}
@@ -851,7 +851,7 @@ function ActionButton({ onClick, loading, label, icon, green = false, className 
       onClick={onClick}
       disabled={loading}
       className={`
-        flex items-center gap-2 px-4 font-bold text-xs uppercase tracking-wider transition-all duration-300 hover:scale-105 h-full border-none outline-none ring-0 rounded-full
+        flex items-center gap-2 px-4 font-bold text-xs uppercase tracking-wider transition-all duration-300 hover:scale-105 h-full border-none outline-none ring-0 rounded-full cursor-pointer
         ${green
           ? 'bg-gradient-to-r from-[#22C55E] to-[#16a34a] text-black shadow-[0_0_15px_rgba(34,197,94,0.3)] hover:from-[#16a34a] hover:to-[#15803d] hover:shadow-[0_0_20px_rgba(34,197,94,0.4)]'
           : 'bg-gradient-to-br from-[#181818] to-[#2a2a2a] text-gray-300 hover:from-[#2a2a2a] hover:to-[#404040] hover:text-white hover:shadow-lg'}
