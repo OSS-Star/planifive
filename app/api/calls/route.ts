@@ -80,7 +80,7 @@ export async function POST(req: Request) {
             timestamp: new Date().toISOString(),
         };
 
-        await sendDiscordWebhook(embed, "📢 NOUVEL APPEL !");
+        await sendDiscordWebhook(embed, "@everyone 📢 NOUVEL APPEL !");
 
         return NextResponse.json({ success: true, call });
     } catch (error) {
