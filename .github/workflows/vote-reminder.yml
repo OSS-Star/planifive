@@ -1,0 +1,15 @@
+name: Vote Reminder
+
+on:
+  schedule:
+    - cron: '0 10 * * *'
+  workflow_dispatch:
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call API
+        run: |
+          curl -X GET https://planifive.vercel.app/api/cron/vote-reminder \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"
