@@ -20,6 +20,22 @@ export const authOptions: NextAuthOptions = {
     signIn: async ({ user, account, profile }) => {
       if (!user || !account) return false;
 
+      // Check for Ban (Soft Ban)
+      // Note: 'user' here is the subset from the provider, we might need to check the DB if the banning happened recently.
+      // But initially, let's check against the DB entry if possible, or rely on the adapter to fetch it.
+      // However, the adapter runs *after* this callback or *during* logic. 
+      // Safest is to query the DB for the user by email or ID if we suspect they might be banned.
+      // But to be performant, let's optimize.
+
+      // We can do a quick check:
+      if (user.email) {
+        const dbUser = await prisma.user.findUnique({ where: { email: user.email } });
+        if (dbUser?.isBanned) {
+          console.log(`⛔ User ${user.email} is banned. Blocking sign in.`);
+          return false; // Blocks sign in
+        }
+      }
+
       // Force update of image and name from Discord profile on every login
       if (user.id && account.provider === "discord" && profile) {
         try {

@@ -12,6 +12,7 @@ interface User {
     email: string | null;
     image: string | null;
     customName: string | null;
+    isBanned: boolean;
 }
 
 interface Call {
@@ -101,20 +102,30 @@ export default function AdminPage() {
         }
     };
 
-    const handleBanUser = async (userId: string) => {
-        const confirmMessage = "ATTENTION : Vous êtes sur le point de BANNIR ce joueur.\n\nCette action est irréversible et supprimera :\n- Son compte\n- Ses statistiques\n- Ses réservations\n\nÊtes-vous sûr de vouloir continuer ?";
+    const handleBanUser = async (user: User) => {
+        const isBanned = user.isBanned;
+        const action = isBanned ? "RESTAURER" : "BANNIR";
+        const confirmMessage = isBanned
+            ? "Voulez-vous réactiver ce joueur ? Il pourra de nouveau se connecter."
+            : "ATTENTION : Vous êtes sur le point de BANNIR ce joueur.\n\nIl ne pourra plus se connecter.\n\nÊtes-vous sûr ?";
+
         if (!confirm(confirmMessage)) return;
 
         try {
-            const res = await fetch(`/api/users/${userId}`, { method: "DELETE" });
+            const res = await fetch(`/api/users/${user.id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ isBanned: !isBanned })
+            });
+
             if (res.ok) {
-                setUsers(users.filter(u => u.id !== userId));
+                setUsers(users.map(u => u.id === user.id ? { ...u, isBanned: !isBanned } : u));
             } else {
                 const data = await res.json();
-                alert(`Erreur: ${data.error || "Suppression échouée"}`);
+                alert(`Erreur: ${data.error || "Action échouée"}`);
             }
         } catch (error) {
-            console.error("Error banning user:", error);
+            console.error("Error updated user:", error);
             alert("Erreur réseau");
         }
     };
@@ -362,10 +373,13 @@ export default function AdminPage() {
                                             </td>
                                             <td className="p-4 text-right">
                                                 <button
-                                                    onClick={() => handleBanUser(user.id)}
-                                                    className="text-red-500 hover:text-red-400 hover:bg-red-500/10 px-3 py-1 rounded text-xs font-bold transition-colors uppercase tracking-wider border border-red-500/30"
+                                                    onClick={() => handleBanUser(user)}
+                                                    className={`px-3 py-1 rounded text-xs font-bold transition-colors uppercase tracking-wider border ${user.isBanned
+                                                        ? "text-green-500 hover:text-green-400 hover:bg-green-500/10 border-green-500/30"
+                                                        : "text-red-500 hover:text-red-400 hover:bg-red-500/10 border-red-500/30"
+                                                        }`}
                                                 >
-                                                    Bannir
+                                                    {user.isBanned ? "Restaurer" : "Bannir"}
                                                 </button>
                                             </td>
                                         </tr>
