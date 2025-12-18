@@ -12,6 +12,7 @@ interface User {
     name: string | null;
     image: string | null;
     customName: string | null;
+    isBanned?: boolean;
 }
 
 interface Match {
@@ -88,6 +89,9 @@ export default function LeaderboardPage() {
                     (u.customName && u.customName.toLowerCase() === cleanName.toLowerCase()) ||
                     (u.name && u.name.toLowerCase() === cleanName.toLowerCase())
                 );
+
+                if (userMatch?.isBanned) return;
+
                 const playerImage = userMatch?.image || null;
 
                 // Use the standardized name from the user record if matched, otherwise the input name
