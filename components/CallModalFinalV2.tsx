@@ -18,6 +18,8 @@ export default function CallModal({ isOpen, onClose, initialDate, initialHour }:
     const [hour, setHour] = useState(initialHour || "20");
     const [location, setLocation] = useState("");
     const [duration, setDuration] = useState(60); // 60 or 90
+    const [price, setPrice] = useState("");
+    const [comment, setComment] = useState("");
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -28,6 +30,8 @@ export default function CallModal({ isOpen, onClose, initialDate, initialHour }:
             setDate(initialDate || "");
             setHour(initialHour || "20");
             setDuration(60);
+            setPrice("");
+            setComment("");
             setError(null);
             setSuccess(false);
         }
@@ -41,7 +45,7 @@ export default function CallModal({ isOpen, onClose, initialDate, initialHour }:
             const res = await fetch("/api/calls", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ date, hour, location, duration }),
+                body: JSON.stringify({ date, hour, location, duration, price, comment }),
             });
 
             if (res.ok) {
@@ -51,6 +55,8 @@ export default function CallModal({ isOpen, onClose, initialDate, initialHour }:
                     onClose();
                     setDate("");
                     setLocation("");
+                    setPrice("");
+                    setComment("");
                     setDuration(60);
                 }, 2000);
             } else {
@@ -221,23 +227,54 @@ export default function CallModal({ isOpen, onClose, initialDate, initialHour }:
                                             </div>
                                         </div>
 
-                                        {/* Lieu */}
+                                        {/* Lieu & Prix */}
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '50px', width: '105%' }}>
+                                            <div>
+                                                <label className="block text-gray-400 text-sm font-medium mb-1">
+                                                    Lieu
+                                                </label>
+                                                <div className="relative w-full">
+                                                    <input
+                                                        type="text"
+                                                        required
+                                                        placeholder="Ex: Urban Soccer..."
+                                                        value={location}
+                                                        onChange={(e) => setLocation(e.target.value)}
+                                                        className="w-full bg-[#2A2A2A] text-white placeholder:text-gray-500 focus:outline-none focus:bg-[#1a1a1a] transition-all duration-300 shadow-lg border-none ring-0"
+                                                        style={{ borderRadius: '20px', padding: '0 1rem 0 2.5rem', height: '38px', fontSize: '1rem' }}
+                                                    />
+                                                    <MapPin size={16} className="absolute text-gray-400 pointer-events-none" style={{ left: '0.8rem', top: '50%', transform: 'translateY(-50%)' }} />
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label className="block text-gray-400 text-sm font-medium mb-1">
+                                                    Prix (Optionnel)
+                                                </label>
+                                                <div className="relative w-full">
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Ex: 10€"
+                                                        value={price}
+                                                        onChange={(e) => setPrice(e.target.value)}
+                                                        className="w-full bg-[#2A2A2A] text-white placeholder:text-gray-500 focus:outline-none focus:bg-[#1a1a1a] transition-all duration-300 shadow-lg border-none ring-0"
+                                                        style={{ borderRadius: '20px', padding: '0 1rem', height: '38px', fontSize: '1rem' }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Commentaire */}
                                         <div style={{ paddingRight: '25px' }}>
                                             <label className="block text-gray-400 text-sm font-medium mb-1">
-                                                Lieu
+                                                Commentaire (Optionnel)
                                             </label>
-                                            <div className="relative w-full">
-                                                <input
-                                                    type="text"
-                                                    required
-                                                    placeholder="Ex: Urban Soccer, Le Five..."
-                                                    value={location}
-                                                    onChange={(e) => setLocation(e.target.value)}
-                                                    className="w-full bg-[#2A2A2A] text-white placeholder:text-gray-500 focus:outline-none focus:bg-[#1a1a1a] transition-all duration-300 shadow-lg border-none ring-0"
-                                                    style={{ borderRadius: '20px', padding: '0 1rem 0 2.5rem', height: '38px', fontSize: '1rem' }}
-                                                />
-                                                <MapPin size={16} className="absolute text-gray-400 pointer-events-none" style={{ left: '0.8rem', top: '50%', transform: 'translateY(-50%)' }} />
-                                            </div>
+                                            <textarea
+                                                placeholder="Infos supplémentaires..."
+                                                value={comment}
+                                                onChange={(e) => setComment(e.target.value)}
+                                                className="w-full bg-[#2A2A2A] text-white placeholder:text-gray-500 focus:outline-none focus:bg-[#1a1a1a] transition-all duration-300 shadow-lg border-none ring-0"
+                                                style={{ borderRadius: '20px', padding: '1rem', minHeight: '80px', fontSize: '1rem', resize: 'none' }}
+                                            />
                                         </div>
                                     </div>
 

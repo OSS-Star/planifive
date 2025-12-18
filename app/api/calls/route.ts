@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     const user = await prisma.user.findUnique({ where: { email: session.user.email } });
     if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
-    const { date, hour, location, duration = 60 } = await req.json();
+    const { date, hour, location, duration = 60, price, comment } = await req.json();
 
     if (!date || hour === undefined || !location) {
         return NextResponse.json({ error: "Missing fields" }, { status: 400 });
@@ -32,6 +32,8 @@ export async function POST(req: Request) {
                 hour: parseInt(hour),
                 location,
                 duration: parseInt(duration),
+                price,
+                comment
             },
         });
 
@@ -63,9 +65,16 @@ export async function POST(req: Request) {
         const dateStr = dateObj.toLocaleDateString("fr-FR", { weekday: 'long', day: 'numeric', month: 'long' });
         const durationStr = duration === 90 ? "1h30" : "1h00";
 
+        let description = `**${user.name || "Un joueur"}** lance un appel pour un Five !\n\n📅 **${dateStr}**\n⏰ **${hour}h00**\n⏱️ **Durée : ${durationStr}**\n📍 **${location}**`;
+
+        if (price) description += `\n💰 **Prix : ${price}**`;
+        if (comment) description += `\n📝 **Note : ${comment}**`;
+
+        description += `\n\n👉 Connectez-vous pour rejoindre !`;
+
         const embed = {
             title: "📢 NOUVEL APPEL FIVE !",
-            description: `**${user.name || "Un joueur"}** lance un appel pour un Five !\n\n📅 **${dateStr}**\n⏰ **${hour}h00**\n⏱️ **Durée : ${durationStr}**\n📍 **${location}**\n\n👉 Connectez-vous pour rejoindre !`,
+            description: description,
             color: 5763719, // #57F287 (Green)
             url: "https://planifive.vercel.app/",
             fields: [

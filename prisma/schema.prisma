@@ -136,6 +136,8 @@ model Call {
   hour      Int
   location  String
   duration  Int      @default(60) // 60 or 90 minutes
+  price     String?  // Optional price (e.g. "10€")
+  comment   String?  // Optional comment
   createdAt DateTime @default(now())
 
   creator   User     @relation(fields: [creatorId], references: [id], onDelete: Cascade)
