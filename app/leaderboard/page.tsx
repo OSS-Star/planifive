@@ -94,17 +94,20 @@ export default function LeaderboardPage() {
                 const cleanName = name.trim();
                 const lowerName = cleanName.toLowerCase();
 
-                // 1. Check against Banned Names Set
-                if (bannedNames.has(lowerName)) return;
-
-                // 2. Case insensitive matching with User DB
+                // 1. Try to match with a Real User in DB
                 const userMatch = users.find(u =>
                     (u.customName && u.customName.toLowerCase() === lowerName) ||
                     (u.name && u.name.toLowerCase() === lowerName)
                 );
 
-                // 3. Double Check Banned status
-                if (userMatch?.isBanned) return;
+                if (userMatch) {
+                    // If we found a real user account, trust THEIR status.
+                    if (userMatch.isBanned) return;
+                } else {
+                    // If it's a GUEST (no account found), check the banned names list
+                    // This prevents banned users from playing as "guests" with their banned name
+                    if (bannedNames.has(lowerName)) return;
+                }
 
                 const playerImage = userMatch?.image || null;
 
@@ -114,7 +117,6 @@ export default function LeaderboardPage() {
                 if (!playerStats[displayName]) {
                     playerStats[displayName] = { name: displayName, image: playerImage, matches: 0, wins: 0, losses: 0, draws: 0, winRate: 0 };
                 } else if (!playerStats[displayName].image && playerImage) {
-                    // Update image if found later
                     playerStats[displayName].image = playerImage;
                 }
 
@@ -134,16 +136,20 @@ export default function LeaderboardPage() {
                 const cleanName = name.trim();
                 const lowerName = cleanName.toLowerCase();
 
-                // 1. Check against Banned Names Set
-                if (bannedNames.has(lowerName)) return;
-
-                // 2. Case insensitive matching with User DB
+                // 1. Try to match with a Real User in DB
                 const userMatch = users.find(u =>
                     (u.customName && u.customName.toLowerCase() === lowerName) ||
                     (u.name && u.name.toLowerCase() === lowerName)
                 );
 
-                if (userMatch?.isBanned) return;
+                if (userMatch) {
+                    // If we found a real user account, trust THEIR status.
+                    if (userMatch.isBanned) return;
+                } else {
+                    // If it's a GUEST (no account found), check the banned names list
+                    // This prevents banned users from playing as "guests" with their banned name
+                    if (bannedNames.has(lowerName)) return;
+                }
 
                 const playerImage = userMatch?.image || null;
 
