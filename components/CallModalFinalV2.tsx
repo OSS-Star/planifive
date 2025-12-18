@@ -183,7 +183,7 @@ export default function CallModal({ isOpen, onClose, initialDate, initialHour }:
                                         </div>
 
                                         {/* Heure & Durée */}
-                                        <div style={{ display: 'grid', gridTemplateColumns: '0.8fr 1.2fr', gap: '50px', width: '105%' }}>
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '60px', width: '100%' }}>
                                             <div>
                                                 <label className="block text-gray-400 text-sm font-medium mb-1">
                                                     Heure
@@ -228,8 +228,8 @@ export default function CallModal({ isOpen, onClose, initialDate, initialHour }:
                                         </div>
 
                                         {/* Lieu & Prix */}
-                                        {/* NOTE: Aligning columns with Heure/Durée (0.8fr 1.2fr) as requested */}
-                                        <div style={{ display: 'grid', gridTemplateColumns: '0.8fr 1.2fr', gap: '50px', width: '105%' }}>
+                                        {/* NOTE: Aligning columns with Heure/Durée (1fr 1fr) */}
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '60px', width: '100%' }}>
                                             <div>
                                                 <label className="block text-gray-400 text-sm font-medium mb-1">
                                                     Lieu
