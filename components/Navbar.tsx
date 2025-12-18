@@ -7,6 +7,7 @@ import { Megaphone, Trophy, History, Shield, LogOut } from "lucide-react"; // As
 interface GoldenSlot {
   day: string;
   hour: number;
+  endHour?: number;
   date: Date;
   count?: number;
 }
@@ -103,7 +104,7 @@ export default function Navbar({ goldenSlots, potentialSlots, title, icon, onOpe
                             borderRadius: '4px',
                             border: '1px solid #2A2A2A'
                           }}>
-                            {slot.day} • {slot.hour}h-{slot.hour + 4}h
+                            {slot.day} • {slot.hour}h-{slot.endHour || (slot.hour + 4)}h
                           </div>
                         ))}
                       </div>
@@ -153,7 +154,7 @@ export default function Navbar({ goldenSlots, potentialSlots, title, icon, onOpe
                               justifyContent: 'space-between',
                               alignItems: 'center'
                             }}>
-                              <span>{dateStr} ({dayName}) • {slot.hour}h-{slot.hour + 4}h</span>
+                              <span>{dateStr} ({dayName}) • {slot.hour}h-{slot.endHour || (slot.hour + 4)}h</span>
                               <span style={{ background: countBg, color: 'black', padding: '1px 4px', borderRadius: '2px', fontSize: '10px', fontWeight: 'bold' }}>
                                 {slot.count}
                               </span>

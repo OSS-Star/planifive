@@ -16,7 +16,8 @@ type UserInfo = { id: string; name: string | null; image: string | null };
 type SlotData = { users: UserInfo[]; count: number };
 
 // Nouvelle prop pour communiquer avec la Navbar
-export type GoldenSlot = { day: string; hour: number; date: Date; count?: number; type?: 'golden' | 'best' };
+export type GoldenSlot = { day: string; hour: number; endHour?: number; date: Date; count?: number; type?: 'golden' | 'best'; users?: string[] };
+
 
 interface Call {
   id: string;
@@ -92,9 +93,9 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
   useEffect(() => {
     if (!onUpdateStats) return;
 
-    const goldenSlots: GoldenSlot[] = [];
-    const potentialCandidates: GoldenSlot[] = [];
     let maxCount = 0;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time to compare dates only
 
     // 1. Extraire toutes les dates uniques des données disponibles (slotDetails)
     const uniqueDates = new Set<string>();
@@ -118,10 +119,19 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
     // Convertir en tableau et trier
     const sortedDates = Array.from(uniqueDates).sort();
 
+    // Store raw 4h candidates before merging
+    // Structure: { dayName, dateObj, startHour, userIds: string[], count }
+    type RawCandidate = { dayName: string; dateObj: Date; startHour: number; userIds: string[]; count: number; dateStr: string };
+    const rawCandidates: RawCandidate[] = [];
+
     // 2. Parcourir toutes les dates
     sortedDates.forEach(dateStr => {
       const [y, m, d] = dateStr.split('-').map(Number);
       const dateObj = new Date(y, m - 1, d);
+
+      // FILTER: Exclude past dates
+      if (dateObj < today) return;
+
       // getDay(): 0=Sun, 1=Mon... We want 0=Mon...6=Sun
       const dayIndex = dateObj.getDay() === 0 ? 6 : dateObj.getDay() - 1;
       const dayName = DAYS[dayIndex];
@@ -133,44 +143,112 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
         const slot3 = slotDetails[`${dateStr}-${h + 2}`];
         const slot4 = slotDetails[`${dateStr}-${h + 3}`];
 
-        const c1 = slot1?.count || 0;
-        const c2 = slot2?.count || 0;
-        const c3 = slot3?.count || 0;
-        const c4 = slot4?.count || 0;
+        // Intersection algorithm
+        const users1 = slot1?.users || [];
+        const users2 = slot2?.users || [];
+        const users3 = slot3?.users || [];
+        const users4 = slot4?.users || [];
 
-        // Golden Slot (40/40)
-        if (c1 >= MATCH_SIZE && c2 >= MATCH_SIZE && c3 >= MATCH_SIZE && c4 >= MATCH_SIZE) {
-          goldenSlots.push({ day: dayName, hour: h, date: dateObj, type: 'golden' });
-        }
-        // Potential Slot (Not full but has players in ALL 4 slots)
-        else {
-          // Calculate intersection of users present in all 4 slots
-          const users1 = slot1?.users || [];
-          const users2 = slot2?.users || [];
-          const users3 = slot3?.users || [];
-          const users4 = slot4?.users || [];
+        // Find users present in all 4 lists
+        // Note: This is an O(N*M) op but N is small (max 10-15 users)
+        const commonUsers = users1.filter(u1 =>
+          users2.some(u2 => u2.id === u1.id) &&
+          users3.some(u3 => u3.id === u1.id) &&
+          users4.some(u4 => u4.id === u1.id)
+        );
 
-          // Find users present in all 4 lists
-          const commonUsersCount = users1.filter(u1 =>
-            users2.some(u2 => u2.id === u1.id) &&
-            users3.some(u3 => u3.id === u1.id) &&
-            users4.some(u4 => u4.id === u1.id)
-          ).length;
-
-          if (commonUsersCount > 0) {
-            potentialCandidates.push({ day: dayName, hour: h, date: dateObj, count: commonUsersCount, type: 'best' });
-          }
-          if (commonUsersCount > maxCount) {
-            maxCount = commonUsersCount;
-          }
+        const count = commonUsers.length;
+        if (count > 0) {
+          // Sort user IDs to create a signature for comparison
+          const userIds = commonUsers.map(u => u.id).sort();
+          rawCandidates.push({
+            dayName,
+            dateObj,
+            startHour: h,
+            userIds,
+            count,
+            dateStr
+          });
+          if (count > maxCount) maxCount = count;
         }
       }
     });
 
-    // Filtrer pour ne garder que ceux qui ont le maxCount (si maxCount > 0)
+    // 3. Merge Logic
+    // We want to merge overlapping/contiguous 4h blocks IF they have the exact same users
+    const mergedSlots: GoldenSlot[] = [];
+
+    // Group by Date + UserSignature
+    const grouped = new Map<string, RawCandidate[]>();
+
+    rawCandidates.forEach(cand => {
+      const sig = `${cand.dateStr}|${cand.userIds.join(',')}`;
+      if (!grouped.has(sig)) grouped.set(sig, []);
+      grouped.get(sig)!.push(cand);
+    });
+
+    grouped.forEach((candidates, sig) => {
+      // Sort by start hour
+      candidates.sort((a, b) => a.startHour - b.startHour);
+
+      let currentBlock = candidates[0];
+      let currentEndHour = currentBlock.startHour + 4; // Initial 4h block ends at start+4
+
+      for (let i = 1; i < candidates.length; i++) {
+        const next = candidates[i];
+
+        // Standard Interval Merging for continuous blocks
+        // Since we scan hour by hour, consecutive blocks overlap.
+        if (next.startHour <= currentEndHour) {
+          // Merge
+          currentEndHour = Math.max(currentEndHour, next.startHour + 4);
+        } else {
+          // Determine type
+          const isGolden = currentBlock.count >= MATCH_SIZE;
+          mergedSlots.push({
+            day: currentBlock.dayName,
+            hour: currentBlock.startHour,
+            endHour: currentEndHour,
+            date: currentBlock.dateObj,
+            count: currentBlock.count,
+            type: isGolden ? 'golden' : 'best',
+            users: currentBlock.userIds
+          });
+
+          // Start new
+          currentBlock = next;
+          currentEndHour = next.startHour + 4;
+        }
+      }
+
+      // Push last
+      const isGolden = currentBlock.count >= MATCH_SIZE;
+      mergedSlots.push({
+        day: currentBlock.dayName,
+        hour: currentBlock.startHour,
+        endHour: currentEndHour,
+        date: currentBlock.dateObj,
+        count: currentBlock.count,
+        type: isGolden ? 'golden' : 'best',
+        users: currentBlock.userIds
+      });
+    });
+
+    const goldenSlots = mergedSlots.filter(s => s.type === 'golden');
+    // Filter potential slots to only show "Best" ones (maxCount)
+    // Note: If no one has 10/10, we show potentials. If golden exists, we show them too.
     const bestPotentialSlots = maxCount > 0
-      ? potentialCandidates.filter(p => p.count === maxCount)
+      ? mergedSlots.filter(s => s.type === 'best' && s.count === maxCount)
       : [];
+
+    // Sort by Date, then Hour
+    const sorter = (a: GoldenSlot, b: GoldenSlot) => {
+      if (a.date.getTime() !== b.date.getTime()) return a.date.getTime() - b.date.getTime();
+      return a.hour - b.hour;
+    };
+
+    goldenSlots.sort(sorter);
+    bestPotentialSlots.sort(sorter);
 
     onUpdateStats(goldenSlots, bestPotentialSlots);
   }, [slotDetails, currentMonday, onUpdateStats]);
