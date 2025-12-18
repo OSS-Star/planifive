@@ -288,7 +288,7 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
 
       // 3. Send PUT request with timeout
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+      const timeoutId = setTimeout(() => controller.abort(), 300000); // 5 mins timeout
 
       const res = await fetch("/api/availability", {
         method: "PUT",
