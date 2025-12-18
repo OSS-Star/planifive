@@ -19,7 +19,7 @@ export async function GET(req: Request) {
             include: {
                 accounts: { where: { provider: 'discord' } }
             }
-        });
+        } as any) as any;
 
         if (!process.env.DISCORD_BOT_TOKEN) {
             return NextResponse.json({ error: "DISCORD_BOT_TOKEN missing" }, { status: 500 });
