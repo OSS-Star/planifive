@@ -34,7 +34,7 @@ export async function POST(req: Request) {
                 duration: parseInt(duration),
                 price,
                 comment
-            },
+            } as any,
         });
 
         // 2. Auto-register creator for the duration + buffer

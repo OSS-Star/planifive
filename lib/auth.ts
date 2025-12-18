@@ -1,7 +1,19 @@
-import { NextAuthOptions } from "next-auth";
+import { NextAuthOptions, DefaultSession, DefaultUser } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "./prisma";
+
+declare module "next-auth" {
+  interface User extends DefaultUser {
+    isBanned?: boolean;
+  }
+  interface Session {
+    user: {
+      id: string;
+      isBanned?: boolean;
+    } & DefaultSession["user"];
+  }
+}
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),

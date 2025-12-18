@@ -645,7 +645,7 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
 
   return (
     <>
-      <div className="w-full h-full bg-[#121212] rounded-[32px] border border-[#222] flex flex-col overflow-hidden shadow-2xl relative select-none">
+      <div className="w-full h-full bg-[#121212] rounded-[32px] border border-[#222] flex flex-col overflow-visible shadow-2xl relative select-none">
 
         {/* HEADER GRILLE */}
         <div className="flex items-center justify-between px-6 bg-[#181818] border-b border-[#282828] shrink-0 h-16 relative">
