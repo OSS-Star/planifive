@@ -7,6 +7,10 @@
         {
             "path": "/api/cron/vote-reminder",
             "schedule": "0 10 * * *"
+        },
+        {
+            "path": "/api/cron/sync-avatars",
+            "schedule": "0 4 * * *"
         }
     ]
 }

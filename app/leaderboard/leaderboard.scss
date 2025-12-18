@@ -236,9 +236,11 @@ $spacers: (
         color: var(--dark);
 
         @media screen and (max-width: 700px) {
-            $size: $spacing-unit*4;
+            $size: 40px; // Forced pixel size for visibility
             width: $size;
+            min-width: $size; // Prevent crushing
             height: $size;
+            min-height: $size;
         }
 
         &--lg {
