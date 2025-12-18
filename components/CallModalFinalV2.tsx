@@ -149,7 +149,7 @@ export default function CallModal({ isOpen, onClose, initialDate, initialHour }:
                         </div>
 
                         {/* Body */}
-                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '0 150px' }}>
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '0 80px', overflowY: 'auto' }}>
                             {success ? (
                                 <div className="flex flex-col items-center justify-center py-12 text-center h-full">
                                     <div className="w-24 h-24 bg-green-500/20 rounded-full flex items-center justify-center mb-8">
@@ -166,7 +166,7 @@ export default function CallModal({ isOpen, onClose, initialDate, initialHour }:
                                         </div>
                                     )}
 
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '60px', paddingTop: '40px' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '40px', paddingTop: '40px', flex: 1 }}>
                                         {/* Date */}
                                         <div>
                                             <label className="block text-gray-400 text-sm font-medium mb-1">
@@ -228,7 +228,8 @@ export default function CallModal({ isOpen, onClose, initialDate, initialHour }:
                                         </div>
 
                                         {/* Lieu & Prix */}
-                                        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '50px', width: '105%' }}>
+                                        {/* NOTE: Aligning columns with Heure/Durée (0.8fr 1.2fr) as requested */}
+                                        <div style={{ display: 'grid', gridTemplateColumns: '0.8fr 1.2fr', gap: '50px', width: '105%' }}>
                                             <div>
                                                 <label className="block text-gray-400 text-sm font-medium mb-1">
                                                     Lieu
@@ -278,20 +279,18 @@ export default function CallModal({ isOpen, onClose, initialDate, initialHour }:
                                         </div>
                                     </div>
 
-                                    {/* Actions */}
+                                    {/* Actions - Bottom with spacing */}
                                     <div style={{
-                                        position: 'absolute',
-                                        bottom: '30px',
-                                        left: 0,
-                                        right: 0,
                                         display: 'flex',
                                         justifyContent: 'center',
-                                        gap: '64px'
+                                        gap: '64px',
+                                        marginTop: '40px',
+                                        marginBottom: '40px'
                                     }}>
                                         <button
                                             type="button"
                                             onClick={onClose}
-                                            className="text-gray-300 hover:text-white font-bold text-xs uppercase tracking-wider transition-all"
+                                            className="text-gray-300 hover:text-white font-bold text-xs uppercase tracking-wider transition-all cursor-pointer"
                                             style={{ padding: '0.8rem 3rem', borderRadius: '20px', background: '#2A2A2A' }}
                                         >
                                             Annuler
@@ -299,7 +298,7 @@ export default function CallModal({ isOpen, onClose, initialDate, initialHour }:
                                         <button
                                             type="submit"
                                             disabled={loading}
-                                            className="bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold text-xs uppercase tracking-wider transition-all shadow-lg hover:shadow-[#5865F2]/20 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold text-xs uppercase tracking-wider transition-all shadow-lg hover:shadow-[#5865F2]/20 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                                             style={{ padding: '0.8rem 3rem', borderRadius: '20px' }}
                                         >
                                             {loading ? <Loader2 className="animate-spin" size={16} /> : null}
