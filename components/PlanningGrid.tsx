@@ -749,7 +749,7 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
                       );
 
                       // Dynamic Styles
-                      let parentClasses = `relative z-0 group transition-all duration-200 border-b border-r border-[#222] cursor-pointer flex flex-col items-center justify-center group-hover:!z-[9999]`;
+                      let parentClasses = `relative z-0 group transition-all duration-200 border-b border-r border-[#222] cursor-pointer flex flex-col items-center justify-center hover:!z-[9999]`;
                       const parentStyle: React.CSSProperties = {};
 
                       // PRIORITY: Active Call > Selection > Golden > Full
