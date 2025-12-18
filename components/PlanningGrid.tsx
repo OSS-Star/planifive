@@ -694,7 +694,7 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
         </div>
 
         {/* ZONE GRILLE */}
-        <div className="flex-1 relative w-full h-full overflow-hidden bg-[#0F0F0F]">
+        <div className="flex-1 relative w-full h-full bg-[#0F0F0F] overflow-visible">
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div
               key={currentMonday.toISOString()}
@@ -749,7 +749,7 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
                       );
 
                       // Dynamic Styles
-                      let parentClasses = `relative z-0 group transition-all duration-200 border-b border-r border-[#222] cursor-pointer flex flex-col items-center justify-center group-hover:z-[100]`;
+                      let parentClasses = `relative z-0 group transition-all duration-200 border-b border-r border-[#222] cursor-pointer flex flex-col items-center justify-center group-hover:z-[9999]`;
                       const parentStyle: React.CSSProperties = {};
 
                       // PRIORITY: Active Call > Selection > Golden > Full
