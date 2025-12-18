@@ -94,11 +94,21 @@ export default function LeaderboardPage() {
                 const cleanName = name.trim();
                 const lowerName = cleanName.toLowerCase();
 
-                // 1. Try to match with a Real User in DB
-                const userMatch = users.find(u =>
-                    (u.customName && u.customName.toLowerCase() === lowerName) ||
-                    (u.name && u.name.toLowerCase() === lowerName)
+                // 1. Try to match with a Real User in DB (Prioritize Active Users)
+                // We search for an unbanned matching user FIRST.
+                let userMatch = users.find(u =>
+                    !u.isBanned &&
+                    ((u.customName && u.customName.toLowerCase() === lowerName) ||
+                        (u.name && u.name.toLowerCase() === lowerName))
                 );
+
+                // Fallback: If no unbanned user found, find ANY user (e.g. the banned one)
+                if (!userMatch) {
+                    userMatch = users.find(u =>
+                        (u.customName && u.customName.toLowerCase() === lowerName) ||
+                        (u.name && u.name.toLowerCase() === lowerName)
+                    );
+                }
 
                 if (userMatch) {
                     // If we found a real user account, trust THEIR status.
@@ -136,11 +146,21 @@ export default function LeaderboardPage() {
                 const cleanName = name.trim();
                 const lowerName = cleanName.toLowerCase();
 
-                // 1. Try to match with a Real User in DB
-                const userMatch = users.find(u =>
-                    (u.customName && u.customName.toLowerCase() === lowerName) ||
-                    (u.name && u.name.toLowerCase() === lowerName)
+                // 1. Try to match with a Real User in DB (Prioritize Active Users)
+                // We search for an unbanned matching user FIRST.
+                let userMatch = users.find(u =>
+                    !u.isBanned &&
+                    ((u.customName && u.customName.toLowerCase() === lowerName) ||
+                        (u.name && u.name.toLowerCase() === lowerName))
                 );
+
+                // Fallback: If no unbanned user found, find ANY user (e.g. the banned one)
+                if (!userMatch) {
+                    userMatch = users.find(u =>
+                        (u.customName && u.customName.toLowerCase() === lowerName) ||
+                        (u.name && u.name.toLowerCase() === lowerName)
+                    );
+                }
 
                 if (userMatch) {
                     // If we found a real user account, trust THEIR status.
