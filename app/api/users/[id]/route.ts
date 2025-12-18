@@ -10,7 +10,7 @@ const ADMIN_EMAILS = ["sheizeracc@gmail.com"];
 // UPDATE (Soft Ban / Rename)
 export async function PATCH(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const session = await getServerSession(authOptions);
@@ -19,7 +19,9 @@ export async function PATCH(
             return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
         }
 
-        const { id } = params;
+        // In Next.js 15+, params is a Promise that must be awaited
+        const { id } = await params;
+
         if (!id) {
             return NextResponse.json({ error: "Missing ID" }, { status: 400 });
         }
@@ -46,7 +48,7 @@ export async function PATCH(
 // Keep DELETE just in case, but functionality moved to Soft Ban
 export async function DELETE(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     return NextResponse.json({ error: "Use PATCH to ban users." }, { status: 405 });
 }

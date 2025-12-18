@@ -69,7 +69,7 @@ export default function AdminPage() {
         setSaving(userId);
         try {
             const res = await fetch(`/api/users/${userId}`, {
-                method: "PUT",
+                method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ customName: newName }),
             });
