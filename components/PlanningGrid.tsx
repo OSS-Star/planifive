@@ -64,6 +64,17 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
   const [unsavedChanges, setUnsavedChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
+  // Refs needed for polling interval to access fresh state
+  const mySlotsRef = useRef(mySlots);
+  const unsavedChangesRef = useRef(unsavedChanges);
+  const sessionRef = useRef(session);
+
+  useEffect(() => {
+    mySlotsRef.current = mySlots;
+    unsavedChangesRef.current = unsavedChanges;
+    sessionRef.current = session;
+  }, [mySlots, unsavedChanges, session]);
+
   useEffect(() => {
     fetchDispos();
     fetchCalls();
@@ -207,26 +218,28 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
         if (!isMutating.current && lastMutationTime.current < fetchStartTime) {
 
           let nextSlotDetails = data.slotDetails || {};
+          const currentSession = sessionRef.current;
+          const currentUnsaved = unsavedChangesRef.current;
+          const currentMySlots = mySlotsRef.current;
 
           // OPTIMIZATION: Merge server data with local optimistic state if unsaved
-          if (unsavedChanges && session?.user?.id) {
+          if (currentUnsaved && currentSession?.user?.id) {
             // 1. Deep copy to avoid mutating data.slotDetails directly
-            // (Simpler: just iterate and create new objects where needed)
             const mergedDetails = { ...nextSlotDetails };
 
             // 2. Remove "Me" from ALL server slots (to clear old server state about me)
             Object.keys(mergedDetails).forEach(key => {
               const details = { ...mergedDetails[key] }; // Copy level 2
-              const userIndex = details.users.findIndex((u: any) => u.id === session.user?.id);
+              const userIndex = details.users.findIndex((u: any) => u.id === currentSession.user?.id);
               if (userIndex !== -1) {
-                details.users = details.users.filter((u: any) => u.id !== session.user?.id);
+                details.users = details.users.filter((u: any) => u.id !== currentSession.user?.id);
                 details.count = Math.max(0, details.count - 1);
                 mergedDetails[key] = details;
               }
             });
 
             // 3. Add "Me" to slots based on local mySlots
-            mySlots.forEach(key => {
+            currentMySlots.forEach(key => {
               // Ensure slot object exists
               const details = mergedDetails[key] ? { ...mergedDetails[key] } : { users: [], count: 0 };
 
@@ -234,9 +247,9 @@ export default function PlanningGrid({ onUpdateStats, onOpenCallModal }: Plannin
               details.users = [
                 ...details.users,
                 {
-                  id: session.user?.id,
-                  name: session.user?.name || "Moi",
-                  image: session.user?.image || null
+                  id: currentSession.user?.id,
+                  name: currentSession.user?.name || "Moi",
+                  image: currentSession.user?.image || null
                 }
               ];
               details.count++;
