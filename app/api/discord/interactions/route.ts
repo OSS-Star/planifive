@@ -48,7 +48,11 @@ export async function POST(req: Request) {
             }
 
             // 2. Delegate to Worker (Fire and Forget)
-            const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000";
+            const domain = process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL || "localhost:3000";
+            const protocol = domain.includes("localhost") ? "http" : "https";
+            const baseUrl = `${protocol}://${domain}`;
+
+            console.log(`[Interactions] Delegating to worker at ${baseUrl}/api/discord/worker`);
 
             // Fire worker without awaiting
             fetch(`${baseUrl}/api/discord/worker`, {
@@ -61,10 +65,9 @@ export async function POST(req: Request) {
                     token,
                     userAccountName: userAccount.user.name
                 })
-            }).catch(e => console.error("Failed to spawn worker", e));
+            }).catch(e => console.error(`Failed to spawn worker at ${baseUrl}`, e));
 
             // 3. Immediate Response (Deferred Update)
-            // Shows loading state on button briefly, then allows us to edit message later via webhook
             return NextResponse.json({ type: 6 });
         }
 
