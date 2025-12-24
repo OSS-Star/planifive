@@ -167,6 +167,27 @@ export async function POST(req: Request) {
         if (!call) {
             return NextResponse.json({ error: "Call not found" });
         }
+
+        // --- EXPIRE CHECK ---
+        const nowParis = new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Paris" }));
+        const callTarget = new Date(call.date);
+        // Expiration = End of match (Start + Duration)
+        callTarget.setHours(call.hour + (call.duration / 60), 0, 0, 0);
+
+        if (nowParis > callTarget) {
+            await editDiscordMessage(token, {
+                embeds: [{
+                    title: "🏁 FIVE TERMINÉ",
+                    description: "La date de ce Five est passée. Merci à tous !",
+                    color: 9807270, // Grey
+                    footer: { text: "Planifive • Terminé" }
+                }],
+                components: []
+            });
+            await sendFollowUp(token, { content: "⏱️ Cet appel est expiré.", flags: 64 });
+            return NextResponse.json({ success: true });
+        }
+
         const isCreator = call.creatorId === userId;
 
 
