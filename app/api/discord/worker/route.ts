@@ -151,12 +151,24 @@ async function syncAvailability(userId: string, callId: string, action: 'add' | 
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { action, callId, userId, token, userAccountName } = body; // action, etc.
+        const { action, callId, userId, token, userAccountName } = body;
 
         if (!action || !callId || !userId || !token) {
             console.error("Worker: Missing params", body);
             return NextResponse.json({ error: "Missing params" }, { status: 400 });
         }
+
+        // Fetch Call Data for validation
+        const call = await prisma.call.findUnique({
+            where: { id: callId },
+            include: { responses: true }
+        });
+
+        if (!call) {
+            return NextResponse.json({ error: "Call not found" });
+        }
+        const isCreator = call.creatorId === userId;
+
 
         // --- LIST PARTICIPANTS ---
         if (action === "list_participants") {
@@ -173,10 +185,10 @@ export async function POST(req: Request) {
             return NextResponse.json({ success: true });
         }
 
+
         // --- CANCEL CALL ---
         if (action === "cancel_call") {
-            const call = await prisma.call.findUnique({ where: { id: callId } });
-            if (call && call.creatorId === userId) {
+            if (isCreator) {
                 await prisma.call.delete({ where: { id: callId } });
                 await syncAvailability(userId, callId, 'remove');
 
@@ -189,24 +201,69 @@ export async function POST(req: Request) {
                     components: []
                 });
             } else {
-                await sendFollowUp(token, { content: "❌ Seul le créateur peut annuler.", flags: 64 });
+                await sendFollowUp(token, { content: "❌ Seul le créateur peut annuler l'appel.", flags: 64 });
             }
             return NextResponse.json({ success: true });
         }
 
-        // --- VOTE (ACCEPT/DECLINE) ---
-        const status = action === "accept_call" ? "ACCEPTED" : "DECLINED";
 
-        await prisma.callResponse.upsert({
-            where: { callId_userId: { callId, userId } },
-            create: { callId, userId, status },
-            update: { status }
-        });
+        // --- ACCEPT CALL ---
+        if (action === 'accept_call') {
+            if (isCreator) {
+                return await sendFollowUp(token, { content: "🚫 Inutile, tu es le créateur (donc présent d'office).", flags: 64 });
+            }
 
-        const syncStart = Date.now();
-        const syncAction = status === "ACCEPTED" ? 'add' : 'remove';
-        await syncAvailability(userId, callId, syncAction);
+            const existing = call.responses.find(r => r.userId === userId);
 
+            // 1. Check Explicit Acceptance
+            if (existing?.status === 'ACCEPTED') {
+                return await sendFollowUp(token, { content: "✅ Tu as déjà accepté cet appel.", flags: 64 });
+            }
+
+            // 2. Check Implicit Presence (only if not declined)
+            if (existing?.status !== 'DECLINED') {
+                const slotsCount = call.duration === 90 ? 5 : 4;
+                const slots = Array.from({ length: slotsCount }, (_, i) => call.hour + i);
+                const availCount = await prisma.availability.count({
+                    where: { userId, date: call.date, hour: { in: slots } }
+                });
+                if (availCount === slotsCount) {
+                    return await sendFollowUp(token, { content: "✅ Tu es déjà noté présent(e) grâce à tes disponibilités sur le site !", flags: 64 });
+                }
+            }
+
+            // Proceed to accept (refill hours)
+            await prisma.callResponse.upsert({
+                where: { callId_userId: { callId, userId } },
+                create: { callId, userId, status: 'ACCEPTED' },
+                update: { status: 'ACCEPTED' }
+            });
+            await syncAvailability(userId, callId, 'add');
+        }
+
+
+        // --- DECLINE CALL ---
+        if (action === 'decline_call') {
+            if (isCreator) {
+                return await sendFollowUp(token, { content: "🚫 Tu ne peux pas te retirer de ton propre appel. Annule-le si besoin.", flags: 64 });
+            }
+
+            const existing = call.responses.find(r => r.userId === userId);
+            if (existing?.status === 'DECLINED') {
+                return await sendFollowUp(token, { content: "❌ Tu as déjà refusé cet appel.", flags: 64 });
+            }
+
+            // Proceed to decline
+            await prisma.callResponse.upsert({
+                where: { callId_userId: { callId, userId } },
+                create: { callId, userId, status: 'DECLINED' },
+                update: { status: 'DECLINED' }
+            });
+            await syncAvailability(userId, callId, 'remove');
+        }
+
+
+        // Update Embed after change
         const data = await getUpdatedEmbedData(callId);
         if (data) {
             await editDiscordMessage(token, {
