@@ -110,6 +110,12 @@ export async function POST(req: Request) {
                     {
                         type: 2, // Button
                         style: 2, // Secondary (Grey)
+                        label: "Liste inscrits 📋",
+                        custom_id: `list_participants:${call.id}`
+                    },
+                    {
+                        type: 2, // Button
+                        style: 2, // Secondary (Grey)
                         label: "Annuler l'appel 🗑️",
                         custom_id: `cancel_call:${call.id}`
                     }
