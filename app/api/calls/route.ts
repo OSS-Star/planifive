@@ -89,7 +89,28 @@ export async function POST(req: Request) {
             timestamp: new Date().toISOString(),
         };
 
-        await sendDiscordWebhook(embed, "@everyone 📢 NOUVEL APPEL !");
+        // Create Buttons (ActionRow)
+        const components = [
+            {
+                type: 1, // Action Row
+                components: [
+                    {
+                        type: 2, // Button
+                        style: 1, // Primary (Blurple)
+                        label: "Je participe ✅",
+                        custom_id: `accept_call:${call.id}`
+                    },
+                    {
+                        type: 2, // Button
+                        style: 4, // Danger (Red)
+                        label: "Je passe ❌",
+                        custom_id: `decline_call:${call.id}`
+                    }
+                ]
+            }
+        ];
+
+        await sendDiscordWebhook(embed, "@everyone 📢 NOUVEL APPEL !", components);
 
         return NextResponse.json({ success: true, call });
     } catch (error) {

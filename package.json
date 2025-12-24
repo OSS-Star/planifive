@@ -26,7 +26,8 @@
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
     "sass": "^1.94.2",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+    "tweetnacl": "^1.0.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
